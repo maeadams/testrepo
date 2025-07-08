@@ -310,11 +310,11 @@ resource "azurerm_virtual_machine_extension" "ama_windows" {
   }
 
   # ✅ AGGRESSIVE timeouts to prevent hanging
-  timeouts {
-    create = "10m"
-    update = "10m"
-    delete = "5m"
-  }
+  # timeouts {
+  #   create = "10m"
+  #   update = "10m"
+  #   delete = "5m"
+  # }
 
   depends_on = [
     azurerm_windows_virtual_machine.win_vm,
@@ -344,11 +344,11 @@ resource "azurerm_virtual_machine_extension" "ama_linux" {
     "workspaceKey" = var.log_analytics_workspace_key
   })
 
-  timeouts {
-    create = "30m"
-    update = "30m"
-    delete = "30m"
-  }
+  # timeouts {
+  #   create = "30m"
+  #   update = "30m"
+  #   delete = "30m"
+  # }
 
   lifecycle {
     prevent_destroy = false
@@ -419,11 +419,11 @@ resource "azurerm_virtual_machine_extension" "generic_ext" {
   }
 
   # ✅ AGGRESSIVE timeouts to prevent hanging
-  timeouts {
-    create = "10m"
-    update = "10m"
-    delete = "3m"
-  }
+  # timeouts {
+  #   create = "10m"
+  #   update = "10m"
+  #   delete = "3m"
+  # }
 
   depends_on = [
     azurerm_windows_virtual_machine.win_vm,
@@ -451,11 +451,11 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
   })
 
   # ✅ CRITICAL: Short timeouts to prevent hanging
-  timeouts {
-    create = "8m"
-    update = "8m"
-    delete = "2m"   # ✅ VERY SHORT delete timeout
-  }
+  # timeouts {
+  #   create = "8m"
+  #   update = "8m"
+  #   delete = "2m"   # ✅ VERY SHORT delete timeout
+  # }
 
   tags = {
     Purpose = "AutoStartRDPConfiguration"
