@@ -93,18 +93,18 @@ resource "azurerm_windows_web_app" "main" {
     ]
   }
 
-  provisioner "local-exec" {
-    when    = create
-    command = <<-EOT
-      setlocal enableextensions enabledelayedexpansion
-      if "${each.key}"=="webapp_exposed" (
-        az webapp deploy --resource-group ${each.value.resource_group_name} --name ${each.value.name} --src-path "${path.module}/../../webapp-content/index-exposed.html" --type static --target-path "site/wwwroot/index.html"
-      ) else if "${each.key}"=="webapp_nonexposed" (
-        az webapp deploy --resource-group ${each.value.resource_group_name} --name ${each.value.name} --src-path "${path.module}/../../webapp-content/index-nonexposed.html" --type static --target-path "site/wwwroot/index.html"
-      )
-    EOT
-    interpreter = ["cmd.exe", "/C"]
-  }
+  # provisioner "local-exec" {
+  #   when    = create
+  #   command = <<-EOT
+  #     setlocal enableextensions enabledelayedexpansion
+  #     if "${each.key}"=="webapp_exposed" (
+  #       az webapp deploy --resource-group ${each.value.resource_group_name} --name ${each.value.name} --src-path "${path.module}/../../webapp-content/index-exposed.html" --type static --target-path "site/wwwroot/index.html"
+  #     ) else if "${each.key}"=="webapp_nonexposed" (
+  #       az webapp deploy --resource-group ${each.value.resource_group_name} --name ${each.value.name} --src-path "${path.module}/../../webapp-content/index-nonexposed.html" --type static --target-path "site/wwwroot/index.html"
+  #     )
+  #   EOT
+  #   interpreter = ["cmd.exe", "/C"]
+  # }
 }
 
 ################################################################################

@@ -52,91 +52,91 @@ resource "azurerm_storage_account" "main" {
 }
 
 # ✅ CRITICAL: Enable storage account authentication before destroy (AGGRESSIVE)
-resource "null_resource" "storage_auth_enabler" {
-  for_each = var.storage_accounts
+# resource "null_resource" "storage_auth_enabler" {
+#   for_each = var.storage_accounts
 
-  triggers = {
-    storage_account_name = azurerm_storage_account.main[each.key].name
-    resource_group_name  = var.resource_group_name
-  }
+#   triggers = {
+#     storage_account_name = azurerm_storage_account.main[each.key].name
+#     resource_group_name  = var.resource_group_name
+#   }
 
-  # Enable ALL authentication methods before destroy to prevent 403 errors
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      echo "🔓 Aggressively enabling all access for storage account: ${self.triggers.storage_account_name}"
+#   # Enable ALL authentication methods before destroy to prevent 403 errors
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<-EOT
+#       echo "🔓 Aggressively enabling all access for storage account: ${self.triggers.storage_account_name}"
 
-      # Remove all network rules and fully relax access
-      az storage account update \
-        --name "${self.triggers.storage_account_name}" \
-        --resource-group "${self.triggers.resource_group_name}" \
-        --bypass AzureServices \
-        --default-action Allow \
-        --public-network-access Enabled \
-        --allow-shared-key-access true || echo "⚠️ Failed to fully relax network rules"
+#       # Remove all network rules and fully relax access
+#       az storage account update \
+#         --name "${self.triggers.storage_account_name}" \
+#         --resource-group "${self.triggers.resource_group_name}" \
+#         --bypass AzureServices \
+#         --default-action Allow \
+#         --public-network-access Enabled \
+#         --allow-shared-key-access true || echo "⚠️ Failed to fully relax network rules"
 
-      # Wait for propagation and test access
-      for i in {1..12}; do
-        az storage container list --account-name "${self.triggers.storage_account_name}" --auth-mode key >/dev/null 2>&1 && break
-        echo "⏳ Waiting for storage account access to propagate... ($i/12)"
-        sleep 5
-      done
+#       # Wait for propagation and test access
+#       for i in {1..12}; do
+#         az storage container list --account-name "${self.triggers.storage_account_name}" --auth-mode key >/dev/null 2>&1 && break
+#         echo "⏳ Waiting for storage account access to propagate... ($i/12)"
+#         sleep 5
+#       done
 
-      echo "✅ Storage account authentication configuration completed"
-    EOT
-  }
+#       echo "✅ Storage account authentication configuration completed"
+#     EOT
+#   }
 
-  depends_on = [azurerm_storage_account.main]
-}
+#   depends_on = [azurerm_storage_account.main]
+# }
 
-# ✅ CRITICAL: Force authentication enabler to run BEFORE storage account destroy
-resource "null_resource" "storage_destroy_dependency" {
-  for_each = var.storage_accounts
+# # ✅ CRITICAL: Force authentication enabler to run BEFORE storage account destroy
+# resource "null_resource" "storage_destroy_dependency" {
+#   for_each = var.storage_accounts
 
-  triggers = {
-    auth_enabler_id = null_resource.storage_auth_enabler[each.key].id
-  }
+#   triggers = {
+#     auth_enabler_id = null_resource.storage_auth_enabler[each.key].id
+#   }
 
-  depends_on = [
-    null_resource.storage_auth_enabler,
-    azurerm_storage_account.main
-  ]
-}
+#   depends_on = [
+#     null_resource.storage_auth_enabler,
+#     azurerm_storage_account.main
+#   ]
+# }
 
-# ✅ CRITICAL: Handle container authentication during destroy
-resource "null_resource" "container_auth_handler" {
-  for_each = var.storage_containers
+# # ✅ CRITICAL: Handle container authentication during destroy
+# resource "null_resource" "container_auth_handler" {
+#   for_each = var.storage_containers
 
-  triggers = {
-    storage_account_name = azurerm_storage_account.main[each.value.storage_account_key_ref].name
-    container_name       = each.value.name
-    resource_group_name  = var.resource_group_name
-  }
+#   triggers = {
+#     storage_account_name = azurerm_storage_account.main[each.value.storage_account_key_ref].name
+#     container_name       = each.value.name
+#     resource_group_name  = var.resource_group_name
+#   }
 
-  # Handle authentication issues during destroy
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      echo "Handling authentication for container: ${self.triggers.container_name}"
+#   # Handle authentication issues during destroy
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<-EOT
+#       echo "Handling authentication for container: ${self.triggers.container_name}"
       
-      # Ensure storage account has key-based auth enabled
-      az storage account update \
-        --name "${self.triggers.storage_account_name}" \
-        --resource-group "${self.triggers.resource_group_name}" \
-        --allow-shared-key-access true || echo "Could not enable shared key access"
+#       # Ensure storage account has key-based auth enabled
+#       az storage account update \
+#         --name "${self.triggers.storage_account_name}" \
+#         --resource-group "${self.triggers.resource_group_name}" \
+#         --allow-shared-key-access true || echo "Could not enable shared key access"
       
-      # Wait a moment for propagation
-      sleep 5
+#       # Wait a moment for propagation
+#       sleep 5
       
-      echo "Container authentication handling completed"
-    EOT
-  }
+#       echo "Container authentication handling completed"
+#     EOT
+#   }
 
-  depends_on = [
-    azurerm_storage_account.main,
-    azurerm_storage_container.main
-  ]
-}
+#   depends_on = [
+#     azurerm_storage_account.main,
+#     azurerm_storage_container.main
+#   ]
+# }
 
 # ✅ DISABLED: RBAC role assignments - using access policies instead for POC reliability
 # resource "azurerm_role_assignment" "storage_key_vault_crypto_user" {
@@ -158,39 +158,39 @@ resource "null_resource" "container_auth_handler" {
 # }
 
 # Add this resource before the storage containers
-resource "null_resource" "storage_access_fix" {
-  for_each = var.storage_accounts
+# resource "null_resource" "storage_access_fix" {
+#   for_each = var.storage_accounts
 
-  triggers = {
-    storage_account_name = azurerm_storage_account.main[each.key].name
-    resource_group_name  = var.resource_group_name
-  }
+#   triggers = {
+#     storage_account_name = azurerm_storage_account.main[each.key].name
+#     resource_group_name  = var.resource_group_name
+#   }
 
-  # Ensure storage account is accessible for Terraform operations
-  provisioner "local-exec" {
-    command = <<-EOT
-      echo "Ensuring storage account access: ${azurerm_storage_account.main[each.key].name}"
+#   # Ensure storage account is accessible for Terraform operations
+#   provisioner "local-exec" {
+#     command = <<-EOT
+#       echo "Ensuring storage account access: ${azurerm_storage_account.main[each.key].name}"
       
-      # Enable all access methods
-      az storage account update \
-        --name "${azurerm_storage_account.main[each.key].name}" \
-        --resource-group "${var.resource_group_name}" \
-        --allow-shared-key-access true \
-        --public-network-access Enabled \
-        --default-action Allow || echo "Could not update storage account access"
+#       # Enable all access methods
+#       az storage account update \
+#         --name "${azurerm_storage_account.main[each.key].name}" \
+#         --resource-group "${var.resource_group_name}" \
+#         --allow-shared-key-access true \
+#         --public-network-access Enabled \
+#         --default-action Allow || echo "Could not update storage account access"
       
-      # Clear network rules that might block access
-      az storage account network-rule clear \
-        --account-name "${azurerm_storage_account.main[each.key].name}" \
-        --resource-group "${var.resource_group_name}" || echo "Could not clear network rules"
+#       # Clear network rules that might block access
+#       az storage account network-rule clear \
+#         --account-name "${azurerm_storage_account.main[each.key].name}" \
+#         --resource-group "${var.resource_group_name}" || echo "Could not clear network rules"
       
-      # Wait for propagation
-      sleep 5
-    EOT
-  }
+#       # Wait for propagation
+#       sleep 5
+#     EOT
+#   }
 
-  depends_on = [azurerm_storage_account.main]
-}
+#   depends_on = [azurerm_storage_account.main]
+# }
 
 # Storage Containers - with proper dependencies and authentication handling
 resource "azurerm_storage_container" "main" {
@@ -256,37 +256,37 @@ resource "azurerm_recovery_services_vault" "main" {
 }
 
 # Add cleanup resource for Recovery Services Vault
-resource "null_resource" "rsv_cleanup" {
-  count = var.recovery_services_vault_config != null ? 1 : 0
+# resource "null_resource" "rsv_cleanup" {
+#   count = var.recovery_services_vault_config != null ? 1 : 0
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      echo "Cleaning up Recovery Services Vault backup items..."
-      if command -v az &> /dev/null; then
-        # Disable soft delete and remove backup items
-        az backup vault backup-properties set \
-          --name "${self.triggers.rsv_name}" \
-          --resource-group "${self.triggers.rg_name}" \
-          --soft-delete-feature-state Disable || echo "Could not disable soft delete"
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<-EOT
+#       echo "Cleaning up Recovery Services Vault backup items..."
+#       if command -v az &> /dev/null; then
+#         # Disable soft delete and remove backup items
+#         az backup vault backup-properties set \
+#           --name "${self.triggers.rsv_name}" \
+#           --resource-group "${self.triggers.rg_name}" \
+#           --soft-delete-feature-state Disable || echo "Could not disable soft delete"
         
-        # List and delete backup items in soft delete state
-        az backup item list \
-          --vault-name "${self.triggers.rsv_name}" \
-          --resource-group "${self.triggers.rg_name}" \
-          --query "[?properties.deleteState=='ToBeDeleted'].{Name:properties.friendlyName,ContainerName:properties.containerName}" \
-          --output table || echo "No backup items found"
-      fi
-    EOT
-  }
+#         # List and delete backup items in soft delete state
+#         az backup item list \
+#           --vault-name "${self.triggers.rsv_name}" \
+#           --resource-group "${self.triggers.rg_name}" \
+#           --query "[?properties.deleteState=='ToBeDeleted'].{Name:properties.friendlyName,ContainerName:properties.containerName}" \
+#           --output table || echo "No backup items found"
+#       fi
+#     EOT
+#   }
 
-  triggers = {
-    rsv_name = azurerm_recovery_services_vault.main[0].name
-    rg_name  = var.resource_group_name
-  }
+#   triggers = {
+#     rsv_name = azurerm_recovery_services_vault.main[0].name
+#     rg_name  = var.resource_group_name
+#   }
 
-  depends_on = [azurerm_recovery_services_vault.main]
-}
+#   depends_on = [azurerm_recovery_services_vault.main]
+# }
 
 # ✅ VM Backup Policies
 resource "azurerm_backup_policy_vm" "main" {

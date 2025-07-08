@@ -30,35 +30,35 @@ resource "azurerm_disk_encryption_set" "shared_des" {
 }
 
 # ✅ CRITICAL: Key Vault destroy protection - AFTER DES creation
-resource "null_resource" "kv_destroy_protection" {
-  triggers = {
-    key_vault_id = azurerm_key_vault.kv.id
-    des_id = var.disk_encryption_set_config != null ? azurerm_disk_encryption_set.shared_des[0].id : ""
-    resource_group = var.resource_group_name
-  }
+# resource "null_resource" "kv_destroy_protection" {
+#   triggers = {
+#     key_vault_id = azurerm_key_vault.kv.id
+#     des_id = var.disk_encryption_set_config != null ? azurerm_disk_encryption_set.shared_des[0].id : ""
+#     resource_group = var.resource_group_name
+#   }
 
-  # This resource will be destroyed AFTER all compute resources
-  # preventing Key Vault from being deleted while VMs still need it
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      echo "🔑 Key Vault destroy protection active"
-      echo "Key Vault: ${self.triggers.key_vault_id}"
-      echo "DES: ${self.triggers.des_id}"
-      echo "All dependent resources must be destroyed before this Key Vault"
-    EOT
-  }
+#   # This resource will be destroyed AFTER all compute resources
+#   # preventing Key Vault from being deleted while VMs still need it
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<-EOT
+#       echo "🔑 Key Vault destroy protection active"
+#       echo "Key Vault: ${self.triggers.key_vault_id}"
+#       echo "DES: ${self.triggers.des_id}"
+#       echo "All dependent resources must be destroyed before this Key Vault"
+#     EOT
+#   }
 
-  lifecycle {
-    create_before_destroy = false
-  }
+#   lifecycle {
+#     create_before_destroy = false
+#   }
 
-  # ✅ FIXED: Depend on both Key Vault AND DES after they're created (no circular dependency)
-  depends_on = [
-    azurerm_key_vault.kv,
-    azurerm_disk_encryption_set.shared_des
-  ]
-}
+#   # ✅ FIXED: Depend on both Key Vault AND DES after they're created (no circular dependency)
+#   depends_on = [
+#     azurerm_key_vault.kv,
+#     azurerm_disk_encryption_set.shared_des
+#   ]
+# }
 
 # ✅ IMPROVED: Access Policy with better destroy handling
 resource "azurerm_key_vault_access_policy" "shared_des_access_policy" {
@@ -88,212 +88,212 @@ resource "azurerm_key_vault_access_policy" "shared_des_access_policy" {
 }
 
 # ✅ NEW: Force cleanup of access policies before DES destruction
-resource "null_resource" "cleanup_des_access_policy" {
-  count = var.disk_encryption_set_config != null ? 1 : 0
+# resource "null_resource" "cleanup_des_access_policy" {
+#   count = var.disk_encryption_set_config != null ? 1 : 0
 
-  triggers = {
-    des_principal_id = azurerm_disk_encryption_set.shared_des[0].identity[0].principal_id
-    key_vault_name   = azurerm_key_vault.kv.name
-    resource_group   = var.resource_group_name
-  }
+#   triggers = {
+#     des_principal_id = azurerm_disk_encryption_set.shared_des[0].identity[0].principal_id
+#     key_vault_name   = azurerm_key_vault.kv.name
+#     resource_group   = var.resource_group_name
+#   }
 
-  # Clean up access policy manually before DES is destroyed
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      echo "🧹 Cleaning up DES access policy before DES destruction..."
+#   # Clean up access policy manually before DES is destroyed
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<-EOT
+#       echo "🧹 Cleaning up DES access policy before DES destruction..."
       
-      if ! command -v az >/dev/null 2>&1; then
-        echo "Azure CLI not found - skipping cleanup"
-        exit 0
-      fi
+#       if ! command -v az >/dev/null 2>&1; then
+#         echo "Azure CLI not found - skipping cleanup"
+#         exit 0
+#       fi
       
-      # Remove the specific access policy for the DES
-      echo "Removing access policy for DES: ${self.triggers.des_principal_id}"
-      az keyvault delete-policy \
-        --name "${self.triggers.key_vault_name}" \
-        --resource-group "${self.triggers.resource_group}" \
-        --object-id "${self.triggers.des_principal_id}" 2>/dev/null || echo "Access policy already removed or DES deleted"
+#       # Remove the specific access policy for the DES
+#       echo "Removing access policy for DES: ${self.triggers.des_principal_id}"
+#       az keyvault delete-policy \
+#         --name "${self.triggers.key_vault_name}" \
+#         --resource-group "${self.triggers.resource_group}" \
+#         --object-id "${self.triggers.des_principal_id}" 2>/dev/null || echo "Access policy already removed or DES deleted"
       
-      echo "✅ DES access policy cleanup completed"
-    EOT
-  }
+#       echo "✅ DES access policy cleanup completed"
+#     EOT
+#   }
 
-  depends_on = [
-    azurerm_disk_encryption_set.shared_des,
-    azurerm_key_vault_access_policy.shared_des_access_policy
-  ]
-}
+#   depends_on = [
+#     azurerm_disk_encryption_set.shared_des,
+#     azurerm_key_vault_access_policy.shared_des_access_policy
+#   ]
+# }
 
 # ✅ CRITICAL: Destroy-time Key Vault access enabler
-resource "null_resource" "kv_des_access_during_destroy" {
-  count = var.disk_encryption_set_config != null ? 1 : 0
+# resource "null_resource" "kv_des_access_during_destroy" {
+#   count = var.disk_encryption_set_config != null ? 1 : 0
 
-  triggers = {
-    key_vault_name = azurerm_key_vault.kv.name
-    resource_group = var.resource_group_name
-    des_principal_id = azurerm_disk_encryption_set.shared_des[0].identity[0].principal_id
-    tenant_id = data.azurerm_client_config.current.tenant_id
-  }
+#   triggers = {
+#     key_vault_name = azurerm_key_vault.kv.name
+#     resource_group = var.resource_group_name
+#     des_principal_id = azurerm_disk_encryption_set.shared_des[0].identity[0].principal_id
+#     tenant_id = data.azurerm_client_config.current.tenant_id
+#   }
 
-  # Enable Key Vault access for destroy operations
-  provisioner "local-exec" {
-    when = destroy
-    command = <<-EOT
-      set -e
-      echo "Ensuring Key Vault access for DES during destroy..."
+#   # Enable Key Vault access for destroy operations
+#   provisioner "local-exec" {
+#     when = destroy
+#     command = <<-EOT
+#       set -e
+#       echo "Ensuring Key Vault access for DES during destroy..."
       
-      # Function to retry command
-      retry_command() {
-        local cmd="$1"
-        local max_attempts=5
-        local attempt=1
+#       # Function to retry command
+#       retry_command() {
+#         local cmd="$1"
+#         local max_attempts=5
+#         local attempt=1
         
-        while [ $attempt -le $max_attempts ]; do
-          echo "Attempt $attempt: $cmd"
-          if eval "$cmd"; then
-            return 0
-          fi
-          attempt=$((attempt + 1))
-          if [ $attempt -le $max_attempts ]; then
-            echo "Retrying in 10 seconds..."
-            sleep 10
-          fi
-        done
-        echo "Command failed after $max_attempts attempts: $cmd"
-        return 1
-      }
+#         while [ $attempt -le $max_attempts ]; do
+#           echo "Attempt $attempt: $cmd"
+#           if eval "$cmd"; then
+#             return 0
+#           fi
+#           attempt=$((attempt + 1))
+#           if [ $attempt -le $max_attempts ]; then
+#             echo "Retrying in 10 seconds..."
+#             sleep 10
+#           fi
+#         done
+#         echo "Command failed after $max_attempts attempts: $cmd"
+#         return 1
+#       }
       
-      # Check if Azure CLI is available
-      if ! command -v az >/dev/null 2>&1; then
-        echo "Azure CLI not found - skipping Key Vault access setup"
-        exit 0
-      fi
+#       # Check if Azure CLI is available
+#       if ! command -v az >/dev/null 2>&1; then
+#         echo "Azure CLI not found - skipping Key Vault access setup"
+#         exit 0
+#       fi
       
-      # Enable public network access for destroy operations
-      echo "Enabling Key Vault public access for destroy operations..."
-      retry_command "az keyvault update --name '${self.triggers.key_vault_name}' --resource-group '${self.triggers.resource_group}' --public-network-access Enabled" || echo "Failed to enable public access"
+#       # Enable public network access for destroy operations
+#       echo "Enabling Key Vault public access for destroy operations..."
+#       retry_command "az keyvault update --name '${self.triggers.key_vault_name}' --resource-group '${self.triggers.resource_group}' --public-network-access Enabled" || echo "Failed to enable public access"
       
-      # Ensure DES has access policies
-      echo "Ensuring DES access policy exists..."
-      retry_command "az keyvault set-policy --name '${self.triggers.key_vault_name}' --resource-group '${self.triggers.resource_group}' --object-id '${self.triggers.des_principal_id}' --key-permissions get unwrapKey wrapKey" || echo "Failed to set DES access policy"
+#       # Ensure DES has access policies
+#       echo "Ensuring DES access policy exists..."
+#       retry_command "az keyvault set-policy --name '${self.triggers.key_vault_name}' --resource-group '${self.triggers.resource_group}' --object-id '${self.triggers.des_principal_id}' --key-permissions get unwrapKey wrapKey" || echo "Failed to set DES access policy"
       
-      # Allow current user access for Terraform operations with ALL required permissions
-      echo "Ensuring Terraform access to Key Vault..."
-      CURRENT_USER_ID=$(az ad signed-in-user show --query id -o tsv 2>/dev/null || echo "")
-      if [ -n "$CURRENT_USER_ID" ]; then
-        retry_command "az keyvault set-policy --name '${self.triggers.key_vault_name}' --resource-group '${self.triggers.resource_group}' --object-id '$CURRENT_USER_ID' --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey release rotate getRotationPolicy setRotationPolicy --secret-permissions backup delete get list purge recover restore set" || echo "Failed to set user access policy"
-      fi
+#       # Allow current user access for Terraform operations with ALL required permissions
+#       echo "Ensuring Terraform access to Key Vault..."
+#       CURRENT_USER_ID=$(az ad signed-in-user show --query id -o tsv 2>/dev/null || echo "")
+#       if [ -n "$CURRENT_USER_ID" ]; then
+#         retry_command "az keyvault set-policy --name '${self.triggers.key_vault_name}' --resource-group '${self.triggers.resource_group}' --object-id '$CURRENT_USER_ID' --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey release rotate getRotationPolicy setRotationPolicy --secret-permissions backup delete get list purge recover restore set" || echo "Failed to set user access policy"
+#       fi
       
-      echo "Key Vault access setup completed"
-    EOT
-  }
+#       echo "Key Vault access setup completed"
+#     EOT
+#   }
 
-  depends_on = [
-    azurerm_disk_encryption_set.shared_des,
-    azurerm_key_vault_access_policy.shared_des_access_policy
-  ]
-}
+#   depends_on = [
+#     azurerm_disk_encryption_set.shared_des,
+#     azurerm_key_vault_access_policy.shared_des_access_policy
+#   ]
+# }
 
-# ✅ ENHANCED: Wait for access policy before VM creation
-resource "time_sleep" "wait_for_shared_des_permissions" {
-  count = var.disk_encryption_set_config != null ? 1 : 0
+# # ✅ ENHANCED: Wait for access policy before VM creation
+# resource "time_sleep" "wait_for_shared_des_permissions" {
+#   count = var.disk_encryption_set_config != null ? 1 : 0
 
-  depends_on = [
-    azurerm_disk_encryption_set.shared_des,
-    azurerm_key_vault_access_policy.shared_des_access_policy
-  ]
-  create_duration = "30s"  # ✅ Wait for access policy propagation
-}
+#   depends_on = [
+#     azurerm_disk_encryption_set.shared_des,
+#     azurerm_key_vault_access_policy.shared_des_access_policy
+#   ]
+#   create_duration = "30s"  # ✅ Wait for access policy propagation
+# }
 
-# ✅ CRITICAL: DES dependency tracker - prevents DES deletion until all compute resources signal completion
-resource "null_resource" "des_dependency_tracker" {
-  count = var.disk_encryption_set_config != null ? 1 : 0
+# # ✅ CRITICAL: DES dependency tracker - prevents DES deletion until all compute resources signal completion
+# resource "null_resource" "des_dependency_tracker" {
+#   count = var.disk_encryption_set_config != null ? 1 : 0
 
-  triggers = {
-    des_id = azurerm_disk_encryption_set.shared_des[0].id
-    # This resource will be referenced by compute modules to create proper dependencies
-    timestamp = timestamp()
-  }
+#   triggers = {
+#     des_id = azurerm_disk_encryption_set.shared_des[0].id
+#     # This resource will be referenced by compute modules to create proper dependencies
+#     timestamp = timestamp()
+#   }
 
-  lifecycle {
-    # Prevent destruction until all referencing resources are gone
-    create_before_destroy = false
-  }
+#   lifecycle {
+#     # Prevent destruction until all referencing resources are gone
+#     create_before_destroy = false
+#   }
 
-  depends_on = [azurerm_disk_encryption_set.shared_des]
-}
+#   depends_on = [azurerm_disk_encryption_set.shared_des]
+# }
 
-# ✅ UPDATE: Force DES cleanup after access policy is handled
-resource "null_resource" "force_des_cleanup" {
-  count = var.disk_encryption_set_config != null ? 1 : 0
+# # ✅ UPDATE: Force DES cleanup after access policy is handled
+# resource "null_resource" "force_des_cleanup" {
+#   count = var.disk_encryption_set_config != null ? 1 : 0
 
-  triggers = {
-    des_id = azurerm_disk_encryption_set.shared_des[0].id
-    tracker_id = null_resource.des_dependency_tracker[0].id
-    cleanup_id = null_resource.cleanup_des_access_policy[0].id  # ✅ NEW dependency
-  }
+#   triggers = {
+#     des_id = azurerm_disk_encryption_set.shared_des[0].id
+#     tracker_id = null_resource.des_dependency_tracker[0].id
+#     cleanup_id = null_resource.cleanup_des_access_policy[0].id  # ✅ NEW dependency
+#   }
 
-  # Force delete DES if it's still referenced during destroy
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      echo "🔒 Waiting for VM cleanup before DES removal..."
-      # Wait extra time for VM disk references to clear
-      sleep 180
+#   # Force delete DES if it's still referenced during destroy
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<-EOT
+#       echo "🔒 Waiting for VM cleanup before DES removal..."
+#       # Wait extra time for VM disk references to clear
+#       sleep 180
       
-      echo "Checking for remaining VM disk references..."
-      DES_ID="${self.triggers.des_id}"
-      DES_NAME=$(echo "$DES_ID" | sed 's|.*/||')
-      DES_RG=$(echo "$DES_ID" | sed 's|.*resourceGroups/||' | sed 's|/providers.*||')
+#       echo "Checking for remaining VM disk references..."
+#       DES_ID="${self.triggers.des_id}"
+#       DES_NAME=$(echo "$DES_ID" | sed 's|.*/||')
+#       DES_RG=$(echo "$DES_ID" | sed 's|.*resourceGroups/||' | sed 's|/providers.*||')
       
-      # Check for any VMs still using this DES
-      USING_VMS=$(az vm list --query "[?storageProfile.osDisk.managedDisk.diskEncryptionSet.id=='$DES_ID'].name" -o tsv 2>/dev/null || true)
-      if [ -n "$USING_VMS" ]; then
-        echo "⚠️ VMs still using DES: $USING_VMS"
-        echo "Waiting additional 120 seconds for VM cleanup..."
-        sleep 120
-      fi
+#       # Check for any VMs still using this DES
+#       USING_VMS=$(az vm list --query "[?storageProfile.osDisk.managedDisk.diskEncryptionSet.id=='$DES_ID'].name" -o tsv 2>/dev/null || true)
+#       if [ -n "$USING_VMS" ]; then
+#         echo "⚠️ VMs still using DES: $USING_VMS"
+#         echo "Waiting additional 120 seconds for VM cleanup..."
+#         sleep 120
+#       fi
       
-      # Check for any managed disks still using this DES
-      USING_DISKS=$(az disk list --query "[?encryption.diskEncryptionSetId=='$DES_ID'].name" -o tsv 2>/dev/null || true)
-      if [ -n "$USING_DISKS" ]; then
-        echo "⚠️ Disks still using DES: $USING_DISKS"
-        echo "Waiting additional 120 seconds for disk cleanup..."
-        sleep 120
-      fi
+#       # Check for any managed disks still using this DES
+#       USING_DISKS=$(az disk list --query "[?encryption.diskEncryptionSetId=='$DES_ID'].name" -o tsv 2>/dev/null || true)
+#       if [ -n "$USING_DISKS" ]; then
+#         echo "⚠️ Disks still using DES: $USING_DISKS"
+#         echo "Waiting additional 120 seconds for disk cleanup..."
+#         sleep 120
+#       fi
       
-      echo "Attempting DES cleanup: $DES_NAME"
-      # Try to delete DES manually if needed
-      az disk-encryption-set delete --name "$DES_NAME" --resource-group "$DES_RG" --yes --no-wait 2>/dev/null && echo "✅ DES deletion initiated" || echo "⚠️ DES deletion failed (expected if already deleted)"
-    EOT
-  }
+#       echo "Attempting DES cleanup: $DES_NAME"
+#       # Try to delete DES manually if needed
+#       az disk-encryption-set delete --name "$DES_NAME" --resource-group "$DES_RG" --yes --no-wait 2>/dev/null && echo "✅ DES deletion initiated" || echo "⚠️ DES deletion failed (expected if already deleted)"
+#     EOT
+#   }
 
-  depends_on = [
-    azurerm_disk_encryption_set.shared_des,
-    null_resource.des_dependency_tracker,
-    null_resource.cleanup_des_access_policy  # ✅ NEW dependency
-  ]
-}
+#   depends_on = [
+#     azurerm_disk_encryption_set.shared_des,
+#     null_resource.des_dependency_tracker,
+#     null_resource.cleanup_des_access_policy  # ✅ NEW dependency
+#   ]
+# }
 
-# ✅ CRITICAL: Pre-apply Key Vault access enabler
-resource "null_resource" "pre_apply_kv_access_enabler" {
-  # Trigger on every apply to ensure access is enabled
-  triggers = {
-    kv_name = substr(regex("[a-zA-Z0-9-]+", replace(replace("${var.key_vault_config.name}-${var.random_suffix}", "_", "-"), "[^a-zA-Z0-9-]", "")), 0, 24)
-    resource_group = var.resource_group_name
-    timestamp = timestamp()
-  }
+# # ✅ CRITICAL: Pre-apply Key Vault access enabler
+# resource "null_resource" "pre_apply_kv_access_enabler" {
+#   # Trigger on every apply to ensure access is enabled
+#   triggers = {
+#     kv_name = substr(regex("[a-zA-Z0-9-]+", replace(replace("${var.key_vault_config.name}-${var.random_suffix}", "_", "-"), "[^a-zA-Z0-9-]", "")), 0, 24)
+#     resource_group = var.resource_group_name
+#     timestamp = timestamp()
+#   }
 
-  # Force enable public access before any Key Vault operations
-  provisioner "local-exec" {
-    command = <<-EOT
-      echo "🔓 Ensuring Key Vault public access is enabled before apply..."
-      az keyvault update --name ${self.triggers.kv_name} --resource-group ${self.triggers.resource_group} --public-network-access Enabled --default-action Allow 2>/dev/null || echo "Key Vault may not exist yet"
-      echo "✅ Key Vault access enabler completed"
-    EOT
-  }
-}
+#   # Force enable public access before any Key Vault operations
+#   provisioner "local-exec" {
+#     command = <<-EOT
+#       echo "🔓 Ensuring Key Vault public access is enabled before apply..."
+#       az keyvault update --name ${self.triggers.kv_name} --resource-group ${self.triggers.resource_group} --public-network-access Enabled --default-action Allow 2>/dev/null || echo "Key Vault may not exist yet"
+#       echo "✅ Key Vault access enabler completed"
+#     EOT
+#   }
+# }
 
 # ✅ CRITICAL: Key Vault with proper configuration for CMK
 resource "azurerm_key_vault" "kv" {
@@ -420,59 +420,59 @@ resource "azurerm_key_vault_secret" "secrets" {
   }
 
   depends_on = [
-    azurerm_key_vault.kv,
-    null_resource.pre_apply_kv_access_enabler
+    azurerm_key_vault.kv
+    #null_resource.pre_apply_kv_access_enabler
   ]
 }
 
 # ✅ CRITICAL: Ensure Key Vault public access and permissions during destroy
-resource "null_resource" "kv_public_access_enforcer" {
-  # Trigger when Key Vault changes or during destroy
-  triggers = {
-    key_vault_name = azurerm_key_vault.kv.name
-    resource_group = var.resource_group_name
-    tenant_id = data.azurerm_client_config.current.tenant_id
-  }
+# resource "null_resource" "kv_public_access_enforcer" {
+#   # Trigger when Key Vault changes or during destroy
+#   triggers = {
+#     key_vault_name = azurerm_key_vault.kv.name
+#     resource_group = var.resource_group_name
+#     tenant_id = data.azurerm_client_config.current.tenant_id
+#   }
 
-  # Enable public access and full permissions before any destroy operations
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      set -e
-      echo "🔓 Enabling Key Vault access for destroy operations..."
+#   # Enable public access and full permissions before any destroy operations
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<-EOT
+#       set -e
+#       echo "🔓 Enabling Key Vault access for destroy operations..."
       
-      # Function to retry command
-      retry_cmd() {
-        local cmd="$1"
-        local max_attempts=3
-        local attempt=1
+#       # Function to retry command
+#       retry_cmd() {
+#         local cmd="$1"
+#         local max_attempts=3
+#         local attempt=1
         
-        while [ $attempt -le $max_attempts ]; do
-          if eval "$cmd"; then
-            return 0
-          fi
-          attempt=$((attempt + 1))
-          [ $attempt -le $max_attempts ] && sleep 5
-        done
-        return 1
-      }
+#         while [ $attempt -le $max_attempts ]; do
+#           if eval "$cmd"; then
+#             return 0
+#           fi
+#           attempt=$((attempt + 1))
+#           [ $attempt -le $max_attempts ] && sleep 5
+#         done
+#         return 1
+#       }
       
-      # Enable public access
-      retry_cmd "az keyvault update --name '${self.triggers.key_vault_name}' --resource-group '${self.triggers.resource_group}' --public-network-access Enabled --default-action Allow" || echo "Failed to enable public access"
+#       # Enable public access
+#       retry_cmd "az keyvault update --name '${self.triggers.key_vault_name}' --resource-group '${self.triggers.resource_group}' --public-network-access Enabled --default-action Allow" || echo "Failed to enable public access"
       
-      # Grant current user ALL permissions for destroy operations
-      CURRENT_USER_ID=$(az ad signed-in-user show --query id -o tsv 2>/dev/null || echo "")
-      if [ -n "$CURRENT_USER_ID" ]; then
-        echo "Granting full Key Vault permissions to current user: $CURRENT_USER_ID"
-        retry_cmd "az keyvault set-policy --name '${self.triggers.key_vault_name}' --object-id '$CURRENT_USER_ID' --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey release rotate getRotationPolicy setRotationPolicy --secret-permissions backup delete get list purge recover restore set --certificate-permissions backup create delete deleteIssuers get getIssuers import list listIssuers manageContacts manageIssuers purge recover restore setIssuers update" || echo "Failed to set full user permissions"
-      fi
+#       # Grant current user ALL permissions for destroy operations
+#       CURRENT_USER_ID=$(az ad signed-in-user show --query id -o tsv 2>/dev/null || echo "")
+#       if [ -n "$CURRENT_USER_ID" ]; then
+#         echo "Granting full Key Vault permissions to current user: $CURRENT_USER_ID"
+#         retry_cmd "az keyvault set-policy --name '${self.triggers.key_vault_name}' --object-id '$CURRENT_USER_ID' --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey release rotate getRotationPolicy setRotationPolicy --secret-permissions backup delete get list purge recover restore set --certificate-permissions backup create delete deleteIssuers get getIssuers import list listIssuers manageContacts manageIssuers purge recover restore setIssuers update" || echo "Failed to set full user permissions"
+#       fi
       
-      echo "✅ Key Vault access setup completed"
-    EOT
-  }
+#       echo "✅ Key Vault access setup completed"
+#     EOT
+#   }
 
-  depends_on = [azurerm_key_vault.kv]
-}
+#   depends_on = [azurerm_key_vault.kv]
+# }
 
 # Note: Key Vault cleanup handled via lifecycle rules above
 
