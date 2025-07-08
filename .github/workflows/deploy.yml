@@ -54,9 +54,9 @@ jobs:
         id: plan
         run: |
           export exitcode=0
-          terraform plan -no-color -var-file="./tfvars/terraform.tfvars" -out main.tfplan || export exitcode=$?
+          terraform plan -no-color -var-file="./tfvars/terraform.tfvars" -out main.tfplan 
 
-          echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+          #echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
 
           # if [ $exitcode -eq 1 ]; then
           #   echo "Error: Terraform plan failed"
