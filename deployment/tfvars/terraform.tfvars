@@ -19,6 +19,7 @@ management_group_config = {
   }
 }
 
+
 # Azure Firewall Configuration
 firewall_config = {
   name                    = "afw-hub-POCpub-1"
