@@ -51,7 +51,6 @@ provider "azurerm" {
   use_oidc = true
 }
 
-
 provider "azuread" {}
 provider "tls" {}
 provider "pkcs12" {}
