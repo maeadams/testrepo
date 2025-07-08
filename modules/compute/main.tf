@@ -473,227 +473,227 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
 }
 
 # ✅ ADD: Ensure VM is running after deployment
-resource "null_resource" "ensure_vm_running" {
-  for_each = var.windows_vms
+# resource "null_resource" "ensure_vm_running" {
+#   for_each = var.windows_vms
 
-  triggers = {
-    vm_id          = azurerm_windows_virtual_machine.win_vm[each.key].id
-    vm_name        = azurerm_windows_virtual_machine.win_vm[each.key].name
-    resource_group = var.resource_group_name
-  }
+#   triggers = {
+#     vm_id          = azurerm_windows_virtual_machine.win_vm[each.key].id
+#     vm_name        = azurerm_windows_virtual_machine.win_vm[each.key].name
+#     resource_group = var.resource_group_name
+#   }
 
-  provisioner "local-exec" {
-    command = <<-EOT
-      echo "Ensuring VM ${each.value.name_prefix} is running..."
-      az vm start --name ${self.triggers.vm_name} --resource-group ${self.triggers.resource_group} || echo "VM may already be running"
+#   provisioner "local-exec" {
+#     command = <<-EOT
+#       echo "Ensuring VM ${each.value.name_prefix} is running..."
+#       az vm start --name ${self.triggers.vm_name} --resource-group ${self.triggers.resource_group} || echo "VM may already be running"
       
-      # Wait for VM to be fully ready
-      echo "Waiting for VM to be ready..."
-      sleep 60
+#       # Wait for VM to be fully ready
+#       echo "Waiting for VM to be ready..."
+#       sleep 60
       
-      # Check VM status
-      az vm get-instance-view --name ${self.triggers.vm_name} --resource-group ${self.triggers.resource_group} --query "instanceView.statuses[?code=='PowerState/running']" --output table
-    EOT
-  }
+#       # Check VM status
+#       az vm get-instance-view --name ${self.triggers.vm_name} --resource-group ${self.triggers.resource_group} --query "instanceView.statuses[?code=='PowerState/running']" --output table
+#     EOT
+#   }
 
-  depends_on = [
-    azurerm_windows_virtual_machine.win_vm,
-    azurerm_virtual_machine_extension.vm_auto_start
-  ]
-}
+#   depends_on = [
+#     azurerm_windows_virtual_machine.win_vm,
+#     azurerm_virtual_machine_extension.vm_auto_start
+#   ]
+# }
 
 # ✅ ADD: RDP Service Health Check
-resource "null_resource" "rdp_health_check" {
-  for_each = var.windows_vms
+# resource "null_resource" "rdp_health_check" {
+#   for_each = var.windows_vms
 
-  triggers = {
-    vm_id          = azurerm_windows_virtual_machine.win_vm[each.key].id
-    vm_name        = azurerm_windows_virtual_machine.win_vm[each.key].name
-    resource_group = var.resource_group_name
-  }
+#   triggers = {
+#     vm_id          = azurerm_windows_virtual_machine.win_vm[each.key].id
+#     vm_name        = azurerm_windows_virtual_machine.win_vm[each.key].name
+#     resource_group = var.resource_group_name
+#   }
 
-  provisioner "local-exec" {
-    command = <<-EOT
-      echo "Checking RDP service status for ${each.value.name_prefix}..."
+#   provisioner "local-exec" {
+#     command = <<-EOT
+#       echo "Checking RDP service status for ${each.value.name_prefix}..."
       
-      # Run command to check RDP service status
-      az vm run-command invoke \
-        --name ${self.triggers.vm_name} \
-        --resource-group ${self.triggers.resource_group} \
-        --command-id RunPowerShellScript \
-        --scripts "Get-Service TermService | Select-Object Name, Status, StartType; Get-NetFirewallRule -DisplayName '*Remote Desktop*' | Select-Object DisplayName, Enabled, Direction" \
-        --output table || echo "Could not check RDP status"
-    EOT
-  }
+#       # Run command to check RDP service status
+#       az vm run-command invoke \
+#         --name ${self.triggers.vm_name} \
+#         --resource-group ${self.triggers.resource_group} \
+#         --command-id RunPowerShellScript \
+#         --scripts "Get-Service TermService | Select-Object Name, Status, StartType; Get-NetFirewallRule -DisplayName '*Remote Desktop*' | Select-Object DisplayName, Enabled, Direction" \
+#         --output table || echo "Could not check RDP status"
+#     EOT
+#   }
 
-  depends_on = [
-    null_resource.ensure_vm_running
-  ]
-}
+#   depends_on = [
+#     null_resource.ensure_vm_running
+#   ]
+# }
 
 # ✅ NEW: Ensure VMs are running before ANY extension operations
-resource "null_resource" "ensure_vm_running_before_extensions" {
-  for_each = merge(var.windows_vms, var.linux_vms)
+# resource "null_resource" "ensure_vm_running_before_extensions" {
+#   for_each = merge(var.windows_vms, var.linux_vms)
 
-  triggers = {
-    vm_id = try(
-      azurerm_windows_virtual_machine.win_vm[each.key].id,
-      azurerm_linux_virtual_machine.linux_vm[each.key].id,
-      ""
-    )
-    vm_name = try(
-      azurerm_windows_virtual_machine.win_vm[each.key].name,
-      azurerm_linux_virtual_machine.linux_vm[each.key].name,
-      ""
-    )
-    resource_group = var.resource_group_name
-    timestamp      = timestamp()
-  }
+#   triggers = {
+#     vm_id = try(
+#       azurerm_windows_virtual_machine.win_vm[each.key].id,
+#       azurerm_linux_virtual_machine.linux_vm[each.key].id,
+#       ""
+#     )
+#     vm_name = try(
+#       azurerm_windows_virtual_machine.win_vm[each.key].name,
+#       azurerm_linux_virtual_machine.linux_vm[each.key].name,
+#       ""
+#     )
+#     resource_group = var.resource_group_name
+#     timestamp      = timestamp()
+#   }
 
-  # Start VM before ANY extension operations (create, update, or destroy)
-  provisioner "local-exec" {
-    command = <<-EOT
-      echo "🚀 Ensuring VM ${self.triggers.vm_name} is running before extension operations..."
+#   # Start VM before ANY extension operations (create, update, or destroy)
+#   provisioner "local-exec" {
+#     command = <<-EOT
+#       echo "🚀 Ensuring VM ${self.triggers.vm_name} is running before extension operations..."
       
-      # Check if Azure CLI is available
-      if ! command -v az >/dev/null 2>&1; then
-        echo "Azure CLI not found - skipping VM start"
-        exit 0
-      fi
+#       # Check if Azure CLI is available
+#       if ! command -v az >/dev/null 2>&1; then
+#         echo "Azure CLI not found - skipping VM start"
+#         exit 0
+#       fi
       
-      # Start the VM
-      echo "Starting VM: ${self.triggers.vm_name}"
-      az vm start --ids "${self.triggers.vm_id}" --no-wait || {
-        echo "Failed to start VM with ID, trying with name..."
-        az vm start --name "${self.triggers.vm_name}" --resource-group "${self.triggers.resource_group}" --no-wait || {
-          echo "VM start failed - VM might already be running or deleted"
-          exit 0
-        }
-      }
+#       # Start the VM
+#       echo "Starting VM: ${self.triggers.vm_name}"
+#       az vm start --ids "${self.triggers.vm_id}" --no-wait || {
+#         echo "Failed to start VM with ID, trying with name..."
+#         az vm start --name "${self.triggers.vm_name}" --resource-group "${self.triggers.resource_group}" --no-wait || {
+#           echo "VM start failed - VM might already be running or deleted"
+#           exit 0
+#         }
+#       }
       
-      # Wait for VM to be running
-      echo "Waiting for VM to be running..."
-      timeout 120 bash -c '
-        while true; do
-          status=$(az vm get-instance-view --ids "${self.triggers.vm_id}" --query "instanceView.statuses[?code=='\''PowerState/running'\''].displayStatus" -o tsv 2>/dev/null || echo "")
-          if [ "$status" = "VM running" ]; then
-            echo "✅ VM is now running"
-            break
-          fi
-          echo "VM status: $status - waiting..."
-          sleep 10
-        done
-      ' || echo "Timeout waiting for VM - proceeding anyway"
+#       # Wait for VM to be running
+#       echo "Waiting for VM to be running..."
+#       timeout 120 bash -c '
+#         while true; do
+#           status=$(az vm get-instance-view --ids "${self.triggers.vm_id}" --query "instanceView.statuses[?code=='\''PowerState/running'\''].displayStatus" -o tsv 2>/dev/null || echo "")
+#           if [ "$status" = "VM running" ]; then
+#             echo "✅ VM is now running"
+#             break
+#           fi
+#           echo "VM status: $status - waiting..."
+#           sleep 10
+#         done
+#       ' || echo "Timeout waiting for VM - proceeding anyway"
       
-      echo "✅ VM preparation completed for ${self.triggers.vm_name}"
-    EOT
-  }
+#       echo "✅ VM preparation completed for ${self.triggers.vm_name}"
+#     EOT
+#   }
 
-  # Also run on destroy to ensure VM is running before extension cleanup
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      echo "🚀 Starting VM ${self.triggers.vm_name} before extension cleanup..."
+#   # Also run on destroy to ensure VM is running before extension cleanup
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<-EOT
+#       echo "🚀 Starting VM ${self.triggers.vm_name} before extension cleanup..."
       
-      if ! command -v az >/dev/null 2>&1; then
-        echo "Azure CLI not found - skipping"
-        exit 0
-      fi
+#       if ! command -v az >/dev/null 2>&1; then
+#         echo "Azure CLI not found - skipping"
+#         exit 0
+#       fi
       
-      # Start VM before extension cleanup
-      az vm start --ids "${self.triggers.vm_id}" --no-wait || {
-        az vm start --name "${self.triggers.vm_name}" --resource-group "${self.triggers.resource_group}" --no-wait || {
-          echo "Could not start VM - might be deleted already"
-          exit 0
-        }
-      }
+#       # Start VM before extension cleanup
+#       az vm start --ids "${self.triggers.vm_id}" --no-wait || {
+#         az vm start --name "${self.triggers.vm_name}" --resource-group "${self.triggers.resource_group}" --no-wait || {
+#           echo "Could not start VM - might be deleted already"
+#           exit 0
+#         }
+#       }
       
-      # Short wait for VM to be ready
-      timeout 60 bash -c '
-        while true; do
-          status=$(az vm get-instance-view --ids "${self.triggers.vm_id}" --query "instanceView.statuses[?code=='\''PowerState/running'\''].displayStatus" -o tsv 2>/dev/null || echo "")
-          if [ "$status" = "VM running" ]; then
-            echo "✅ VM is running"
-            break
-          fi
-          sleep 5
-        done
-      ' || echo "Proceeding with extension cleanup"
-    EOT
-  }
+#       # Short wait for VM to be ready
+#       timeout 60 bash -c '
+#         while true; do
+#           status=$(az vm get-instance-view --ids "${self.triggers.vm_id}" --query "instanceView.statuses[?code=='\''PowerState/running'\''].displayStatus" -o tsv 2>/dev/null || echo "")
+#           if [ "$status" = "VM running" ]; then
+#             echo "✅ VM is running"
+#             break
+#           fi
+#           sleep 5
+#         done
+#       ' || echo "Proceeding with extension cleanup"
+#     EOT
+#   }
 
-  depends_on = [
-    azurerm_windows_virtual_machine.win_vm,
-    azurerm_linux_virtual_machine.linux_vm
-  ]
-}
+#   depends_on = [
+#     azurerm_windows_virtual_machine.win_vm,
+#     azurerm_linux_virtual_machine.linux_vm
+#   ]
+# }
 
-# ✅ NEW: Start Windows VMs before extension destroy
-resource "null_resource" "start_windows_vms_before_extension_destroy" {
-  for_each = var.windows_vms
+# # ✅ NEW: Start Windows VMs before extension destroy
+# resource "null_resource" "start_windows_vms_before_extension_destroy" {
+#   for_each = var.windows_vms
 
-  triggers = {
-    vm_id          = azurerm_windows_virtual_machine.win_vm[each.key].id
-    vm_name        = azurerm_windows_virtual_machine.win_vm[each.key].name
-    resource_group = var.resource_group_name
-  }
+#   triggers = {
+#     vm_id          = azurerm_windows_virtual_machine.win_vm[each.key].id
+#     vm_name        = azurerm_windows_virtual_machine.win_vm[each.key].name
+#     resource_group = var.resource_group_name
+#   }
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      echo "🚀 Starting Windows VM ${self.triggers.vm_name} before extension destroy..."
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<-EOT
+#       echo "🚀 Starting Windows VM ${self.triggers.vm_name} before extension destroy..."
       
-      if ! command -v az >/dev/null 2>&1; then
-        echo "Azure CLI not found - skipping"
-        exit 0
-      fi
+#       if ! command -v az >/dev/null 2>&1; then
+#         echo "Azure CLI not found - skipping"
+#         exit 0
+#       fi
       
-      # Start VM
-      az vm start --ids "${self.triggers.vm_id}" --no-wait || {
-        echo "Could not start VM - might be deleted already"
-        exit 0
-      }
+#       # Start VM
+#       az vm start --ids "${self.triggers.vm_id}" --no-wait || {
+#         echo "Could not start VM - might be deleted already"
+#         exit 0
+#       }
       
-      # Wait briefly for VM to start
-      sleep 30
-      echo "✅ Windows VM start process completed"
-    EOT
-  }
+#       # Wait briefly for VM to start
+#       sleep 30
+#       echo "✅ Windows VM start process completed"
+#     EOT
+#   }
 
-  depends_on = [azurerm_windows_virtual_machine.win_vm]
-}
+#   depends_on = [azurerm_windows_virtual_machine.win_vm]
+# }
 
-# ✅ NEW: Start Linux VMs before extension destroy
-resource "null_resource" "start_linux_vms_before_extension_destroy" {
-  for_each = var.linux_vms
+# # ✅ NEW: Start Linux VMs before extension destroy
+# resource "null_resource" "start_linux_vms_before_extension_destroy" {
+#   for_each = var.linux_vms
 
-  triggers = {
-    vm_id          = azurerm_linux_virtual_machine.linux_vm[each.key].id
-    vm_name        = azurerm_linux_virtual_machine.linux_vm[each.key].name
-    resource_group = var.resource_group_name
-  }
+#   triggers = {
+#     vm_id          = azurerm_linux_virtual_machine.linux_vm[each.key].id
+#     vm_name        = azurerm_linux_virtual_machine.linux_vm[each.key].name
+#     resource_group = var.resource_group_name
+#   }
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      echo "🚀 Starting Linux VM ${self.triggers.vm_name} before extension destroy..."
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<-EOT
+#       echo "🚀 Starting Linux VM ${self.triggers.vm_name} before extension destroy..."
       
-      if ! command -v az >/dev/null 2>&1; then
-        echo "Azure CLI not found - skipping"
-        exit 0
-      fi
+#       if ! command -v az >/dev/null 2>&1; then
+#         echo "Azure CLI not found - skipping"
+#         exit 0
+#       fi
       
-      # Start VM
-      az vm start --ids "${self.triggers.vm_id}" --no-wait || {
-        echo "Could not start VM - might be deleted already"
-        exit 0
-      }
+#       # Start VM
+#       az vm start --ids "${self.triggers.vm_id}" --no-wait || {
+#         echo "Could not start VM - might be deleted already"
+#         exit 0
+#       }
       
-      # Wait briefly for VM to start
-      sleep 30
-      echo "✅ Linux VM start process completed"
-    EOT
-  }
+#       # Wait briefly for VM to start
+#       sleep 30
+#       echo "✅ Linux VM start process completed"
+#     EOT
+#   }
 
-  depends_on = [azurerm_linux_virtual_machine.linux_vm]
-}
+#   depends_on = [azurerm_linux_virtual_machine.linux_vm]
+# }
