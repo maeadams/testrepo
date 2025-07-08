@@ -12,6 +12,7 @@ variable "management_group_config" {
   default = {}
 }
 
+
 variable "policy_definitions" {
   description = "Custom Azure Policy definitions"
   type = map(object({
