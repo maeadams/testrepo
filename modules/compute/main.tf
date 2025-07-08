@@ -318,7 +318,7 @@ resource "azurerm_virtual_machine_extension" "ama_windows" {
 
   depends_on = [
     azurerm_windows_virtual_machine.win_vm,
-    null_resource.ensure_vm_running_before_extensions,
+    #null_resource.ensure_vm_running_before_extensions,
     null_resource.key_vault_dependency_signal
   ]
 }
@@ -428,7 +428,7 @@ resource "azurerm_virtual_machine_extension" "generic_ext" {
   depends_on = [
     azurerm_windows_virtual_machine.win_vm,
     azurerm_linux_virtual_machine.linux_vm,
-    null_resource.ensure_vm_running_before_extensions
+    #null_resource.ensure_vm_running_before_extensions
   ]
 }
 
