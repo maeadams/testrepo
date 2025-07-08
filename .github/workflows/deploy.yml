@@ -58,12 +58,12 @@ jobs:
 
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
 
-          if [ $exitcode -eq 1 ]; then
+          if ([ $exitcode -eq 1 ]; then
             echo "Error: Terraform plan failed"
             exit 1
           else
             echo "Terraform plan was successful"
-            exit 0
+            exit 0)
           fi
         
       - name: Publish Terraform Plan
