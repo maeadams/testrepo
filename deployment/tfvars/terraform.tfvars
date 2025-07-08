@@ -5,7 +5,7 @@
 # -----------------------------------------------------------------------------
 # Basic Configuration
 # -----------------------------------------------------------------------------
-# location                  = "France Central"
+location                  = "France Central"
 # subscription_id           = "7445ae6f-a879-4d74-9a49-eebda848dc6c"
 # admin_user_principal_name = "maeva@MngEnvMCAP334656.onmicrosoft.com"
 
