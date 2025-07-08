@@ -2,6 +2,7 @@ variable "location" {
   description = "rg location."
   type = string
 }
+
 # -----------------------------------------------------------------------------
 # Resource Organization Module Variables
 # -----------------------------------------------------------------------------
