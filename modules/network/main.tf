@@ -290,7 +290,7 @@ resource "azurerm_virtual_network_peering" "hub_to_spoke" {
   resource_group_name          = var.resource_group_name
   virtual_network_name         = azurerm_virtual_network.hub.name
   remote_virtual_network_id    = azurerm_virtual_network.spoke[each.key].id
-  allow_virtual_network_access = true   # ✅ ADD THIS
+  allow_virtual_network_access = true # ✅ ADD THIS
   allow_gateway_transit        = false
   allow_forwarded_traffic      = true
   use_remote_gateways          = false
@@ -303,7 +303,7 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
   resource_group_name          = var.resource_group_name
   virtual_network_name         = azurerm_virtual_network.spoke[each.key].name
   remote_virtual_network_id    = azurerm_virtual_network.hub.id
-  allow_virtual_network_access = true   # ✅ ADD THIS
+  allow_virtual_network_access = true # ✅ ADD THIS
   allow_gateway_transit        = false
   allow_forwarded_traffic      = true
   use_remote_gateways          = false

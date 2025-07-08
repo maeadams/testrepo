@@ -128,8 +128,8 @@ resource "azurerm_windows_virtual_machine" "win_vm" {
   }
 
   os_disk {
-    caching              = each.value.os_disk.caching
-    storage_account_type = each.value.os_disk.storage_account_type
+    caching                = each.value.os_disk.caching
+    storage_account_type   = each.value.os_disk.storage_account_type
     disk_encryption_set_id = var.disk_encryption_set_id
   }
 
@@ -143,17 +143,17 @@ resource "azurerm_windows_virtual_machine" "win_vm" {
       bypass_platform_safety_checks_on_user_schedule_enabled,
       hotpatching_enabled,
       provision_vm_agent,
-      
+
       # ✅ REMOVED: virtual_machine_id (was causing warning)
       # virtual_machine_id,
-      
+
       # Ignore case differences in resource IDs
       os_disk[0].disk_encryption_set_id,
-      
+
       # Ignore disk size changes (Azure may adjust these)
       os_disk[0].disk_size_gb,
       os_disk[0].name,
-      
+
       # Ignore other Azure-managed fields
       termination_notification
     ]
@@ -297,7 +297,7 @@ resource "azurerm_virtual_machine_extension" "ama_windows" {
 
   # ✅ CRITICAL: Prevent unnecessary recreation
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy       = false
     create_before_destroy = false
     ignore_changes = [
       # Ignore changes that would cause recreation
@@ -408,7 +408,7 @@ resource "azurerm_virtual_machine_extension" "generic_ext" {
 
   # ✅ CRITICAL: Prevent unnecessary recreation
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy       = false
     create_before_destroy = false
     ignore_changes = [
       # Ignore changes that would cause recreation
@@ -462,7 +462,7 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
   }
 
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy       = false
     create_before_destroy = false
   }
 
@@ -486,11 +486,11 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
 #     command = <<-EOT
 #       echo "Ensuring VM ${each.value.name_prefix} is running..."
 #       az vm start --name ${self.triggers.vm_name} --resource-group ${self.triggers.resource_group} || echo "VM may already be running"
-      
+
 #       # Wait for VM to be fully ready
 #       echo "Waiting for VM to be ready..."
 #       sleep 60
-      
+
 #       # Check VM status
 #       az vm get-instance-view --name ${self.triggers.vm_name} --resource-group ${self.triggers.resource_group} --query "instanceView.statuses[?code=='PowerState/running']" --output table
 #     EOT
@@ -515,7 +515,7 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
 #   provisioner "local-exec" {
 #     command = <<-EOT
 #       echo "Checking RDP service status for ${each.value.name_prefix}..."
-      
+
 #       # Run command to check RDP service status
 #       az vm run-command invoke \
 #         --name ${self.triggers.vm_name} \
@@ -554,13 +554,13 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
 #   provisioner "local-exec" {
 #     command = <<-EOT
 #       echo "🚀 Ensuring VM ${self.triggers.vm_name} is running before extension operations..."
-      
+
 #       # Check if Azure CLI is available
 #       if ! command -v az >/dev/null 2>&1; then
 #         echo "Azure CLI not found - skipping VM start"
 #         exit 0
 #       fi
-      
+
 #       # Start the VM
 #       echo "Starting VM: ${self.triggers.vm_name}"
 #       az vm start --ids "${self.triggers.vm_id}" --no-wait || {
@@ -570,7 +570,7 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
 #           exit 0
 #         }
 #       }
-      
+
 #       # Wait for VM to be running
 #       echo "Waiting for VM to be running..."
 #       timeout 120 bash -c '
@@ -584,7 +584,7 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
 #           sleep 10
 #         done
 #       ' || echo "Timeout waiting for VM - proceeding anyway"
-      
+
 #       echo "✅ VM preparation completed for ${self.triggers.vm_name}"
 #     EOT
 #   }
@@ -594,12 +594,12 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
 #     when    = destroy
 #     command = <<-EOT
 #       echo "🚀 Starting VM ${self.triggers.vm_name} before extension cleanup..."
-      
+
 #       if ! command -v az >/dev/null 2>&1; then
 #         echo "Azure CLI not found - skipping"
 #         exit 0
 #       fi
-      
+
 #       # Start VM before extension cleanup
 #       az vm start --ids "${self.triggers.vm_id}" --no-wait || {
 #         az vm start --name "${self.triggers.vm_name}" --resource-group "${self.triggers.resource_group}" --no-wait || {
@@ -607,7 +607,7 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
 #           exit 0
 #         }
 #       }
-      
+
 #       # Short wait for VM to be ready
 #       timeout 60 bash -c '
 #         while true; do
@@ -642,18 +642,18 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
 #     when    = destroy
 #     command = <<-EOT
 #       echo "🚀 Starting Windows VM ${self.triggers.vm_name} before extension destroy..."
-      
+
 #       if ! command -v az >/dev/null 2>&1; then
 #         echo "Azure CLI not found - skipping"
 #         exit 0
 #       fi
-      
+
 #       # Start VM
 #       az vm start --ids "${self.triggers.vm_id}" --no-wait || {
 #         echo "Could not start VM - might be deleted already"
 #         exit 0
 #       }
-      
+
 #       # Wait briefly for VM to start
 #       sleep 30
 #       echo "✅ Windows VM start process completed"
@@ -677,18 +677,18 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
 #     when    = destroy
 #     command = <<-EOT
 #       echo "🚀 Starting Linux VM ${self.triggers.vm_name} before extension destroy..."
-      
+
 #       if ! command -v az >/dev/null 2>&1; then
 #         echo "Azure CLI not found - skipping"
 #         exit 0
 #       fi
-      
+
 #       # Start VM
 #       az vm start --ids "${self.triggers.vm_id}" --no-wait || {
 #         echo "Could not start VM - might be deleted already"
 #         exit 0
 #       }
-      
+
 #       # Wait briefly for VM to start
 #       sleep 30
 #       echo "✅ Linux VM start process completed"

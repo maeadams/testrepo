@@ -24,7 +24,7 @@ resource "azurerm_storage_account" "main" {
 
   # Always keep shared-key access ON – Terraform needs it to read static-web
   # properties.  Do NOT ignore it in lifecycle.
-  shared_access_key_enabled = lookup(each.value, "allow_shared_key_access", true)
+  shared_access_key_enabled       = lookup(each.value, "allow_shared_key_access", true)
   allow_nested_items_to_be_public = false
 
   identity {
@@ -118,16 +118,16 @@ resource "azurerm_storage_account" "main" {
 #     when    = destroy
 #     command = <<-EOT
 #       echo "Handling authentication for container: ${self.triggers.container_name}"
-      
+
 #       # Ensure storage account has key-based auth enabled
 #       az storage account update \
 #         --name "${self.triggers.storage_account_name}" \
 #         --resource-group "${self.triggers.resource_group_name}" \
 #         --allow-shared-key-access true || echo "Could not enable shared key access"
-      
+
 #       # Wait a moment for propagation
 #       sleep 5
-      
+
 #       echo "Container authentication handling completed"
 #     EOT
 #   }
@@ -170,7 +170,7 @@ resource "azurerm_storage_account" "main" {
 #   provisioner "local-exec" {
 #     command = <<-EOT
 #       echo "Ensuring storage account access: ${azurerm_storage_account.main[each.key].name}"
-      
+
 #       # Enable all access methods
 #       az storage account update \
 #         --name "${azurerm_storage_account.main[each.key].name}" \
@@ -178,12 +178,12 @@ resource "azurerm_storage_account" "main" {
 #         --allow-shared-key-access true \
 #         --public-network-access Enabled \
 #         --default-action Allow || echo "Could not update storage account access"
-      
+
 #       # Clear network rules that might block access
 #       az storage account network-rule clear \
 #         --account-name "${azurerm_storage_account.main[each.key].name}" \
 #         --resource-group "${var.resource_group_name}" || echo "Could not clear network rules"
-      
+
 #       # Wait for propagation
 #       sleep 5
 #     EOT
@@ -269,7 +269,7 @@ resource "azurerm_recovery_services_vault" "main" {
 #           --name "${self.triggers.rsv_name}" \
 #           --resource-group "${self.triggers.rg_name}" \
 #           --soft-delete-feature-state Disable || echo "Could not disable soft delete"
-        
+
 #         # List and delete backup items in soft delete state
 #         az backup item list \
 #           --vault-name "${self.triggers.rsv_name}" \

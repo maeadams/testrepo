@@ -16,9 +16,9 @@ resource "azurerm_disk_encryption_set" "shared_des" {
 
   lifecycle {
     create_before_destroy = true
-    prevent_destroy = false
+    prevent_destroy       = false
     ignore_changes = [
-      key_vault_key_id  # Prevent recreation due to key rotation
+      key_vault_key_id # Prevent recreation due to key rotation
     ]
   }
 
@@ -74,10 +74,10 @@ resource "azurerm_key_vault_access_policy" "shared_des_access_policy" {
 
   lifecycle {
     create_before_destroy = true
-    prevent_destroy = false
+    prevent_destroy       = false
     # ✅ CRITICAL: Ignore changes if DES is being destroyed
     ignore_changes = [
-      object_id  # Ignore if the DES identity no longer exists
+      object_id # Ignore if the DES identity no longer exists
     ]
   }
 
@@ -102,19 +102,19 @@ resource "azurerm_key_vault_access_policy" "shared_des_access_policy" {
 #     when    = destroy
 #     command = <<-EOT
 #       echo "🧹 Cleaning up DES access policy before DES destruction..."
-      
+
 #       if ! command -v az >/dev/null 2>&1; then
 #         echo "Azure CLI not found - skipping cleanup"
 #         exit 0
 #       fi
-      
+
 #       # Remove the specific access policy for the DES
 #       echo "Removing access policy for DES: ${self.triggers.des_principal_id}"
 #       az keyvault delete-policy \
 #         --name "${self.triggers.key_vault_name}" \
 #         --resource-group "${self.triggers.resource_group}" \
 #         --object-id "${self.triggers.des_principal_id}" 2>/dev/null || echo "Access policy already removed or DES deleted"
-      
+
 #       echo "✅ DES access policy cleanup completed"
 #     EOT
 #   }
@@ -142,13 +142,13 @@ resource "azurerm_key_vault_access_policy" "shared_des_access_policy" {
 #     command = <<-EOT
 #       set -e
 #       echo "Ensuring Key Vault access for DES during destroy..."
-      
+
 #       # Function to retry command
 #       retry_command() {
 #         local cmd="$1"
 #         local max_attempts=5
 #         local attempt=1
-        
+
 #         while [ $attempt -le $max_attempts ]; do
 #           echo "Attempt $attempt: $cmd"
 #           if eval "$cmd"; then
@@ -163,28 +163,28 @@ resource "azurerm_key_vault_access_policy" "shared_des_access_policy" {
 #         echo "Command failed after $max_attempts attempts: $cmd"
 #         return 1
 #       }
-      
+
 #       # Check if Azure CLI is available
 #       if ! command -v az >/dev/null 2>&1; then
 #         echo "Azure CLI not found - skipping Key Vault access setup"
 #         exit 0
 #       fi
-      
+
 #       # Enable public network access for destroy operations
 #       echo "Enabling Key Vault public access for destroy operations..."
 #       retry_command "az keyvault update --name '${self.triggers.key_vault_name}' --resource-group '${self.triggers.resource_group}' --public-network-access Enabled" || echo "Failed to enable public access"
-      
+
 #       # Ensure DES has access policies
 #       echo "Ensuring DES access policy exists..."
 #       retry_command "az keyvault set-policy --name '${self.triggers.key_vault_name}' --resource-group '${self.triggers.resource_group}' --object-id '${self.triggers.des_principal_id}' --key-permissions get unwrapKey wrapKey" || echo "Failed to set DES access policy"
-      
+
 #       # Allow current user access for Terraform operations with ALL required permissions
 #       echo "Ensuring Terraform access to Key Vault..."
 #       CURRENT_USER_ID=$(az ad signed-in-user show --query id -o tsv 2>/dev/null || echo "")
 #       if [ -n "$CURRENT_USER_ID" ]; then
 #         retry_command "az keyvault set-policy --name '${self.triggers.key_vault_name}' --resource-group '${self.triggers.resource_group}' --object-id '$CURRENT_USER_ID' --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey release rotate getRotationPolicy setRotationPolicy --secret-permissions backup delete get list purge recover restore set" || echo "Failed to set user access policy"
 #       fi
-      
+
 #       echo "Key Vault access setup completed"
 #     EOT
 #   }
@@ -241,12 +241,12 @@ resource "azurerm_key_vault_access_policy" "shared_des_access_policy" {
 #       echo "🔒 Waiting for VM cleanup before DES removal..."
 #       # Wait extra time for VM disk references to clear
 #       sleep 180
-      
+
 #       echo "Checking for remaining VM disk references..."
 #       DES_ID="${self.triggers.des_id}"
 #       DES_NAME=$(echo "$DES_ID" | sed 's|.*/||')
 #       DES_RG=$(echo "$DES_ID" | sed 's|.*resourceGroups/||' | sed 's|/providers.*||')
-      
+
 #       # Check for any VMs still using this DES
 #       USING_VMS=$(az vm list --query "[?storageProfile.osDisk.managedDisk.diskEncryptionSet.id=='$DES_ID'].name" -o tsv 2>/dev/null || true)
 #       if [ -n "$USING_VMS" ]; then
@@ -254,7 +254,7 @@ resource "azurerm_key_vault_access_policy" "shared_des_access_policy" {
 #         echo "Waiting additional 120 seconds for VM cleanup..."
 #         sleep 120
 #       fi
-      
+
 #       # Check for any managed disks still using this DES
 #       USING_DISKS=$(az disk list --query "[?encryption.diskEncryptionSetId=='$DES_ID'].name" -o tsv 2>/dev/null || true)
 #       if [ -n "$USING_DISKS" ]; then
@@ -262,7 +262,7 @@ resource "azurerm_key_vault_access_policy" "shared_des_access_policy" {
 #         echo "Waiting additional 120 seconds for disk cleanup..."
 #         sleep 120
 #       fi
-      
+
 #       echo "Attempting DES cleanup: $DES_NAME"
 #       # Try to delete DES manually if needed
 #       az disk-encryption-set delete --name "$DES_NAME" --resource-group "$DES_RG" --yes --no-wait 2>/dev/null && echo "✅ DES deletion initiated" || echo "⚠️ DES deletion failed (expected if already deleted)"
@@ -297,7 +297,7 @@ resource "azurerm_key_vault_access_policy" "shared_des_access_policy" {
 
 # ✅ CRITICAL: Key Vault with proper configuration for CMK
 resource "azurerm_key_vault" "kv" {
-  name                            = substr(regex("[a-zA-Z0-9-]+", replace(replace("${var.key_vault_config.name}-${var.random_suffix}", "_", "-"), "[^a-zA-Z0-9-]", "")), 0, 24)  # ✅ Ensure valid KV name
+  name                            = substr(regex("[a-zA-Z0-9-]+", replace(replace("${var.key_vault_config.name}-${var.random_suffix}", "_", "-"), "[^a-zA-Z0-9-]", "")), 0, 24) # ✅ Ensure valid KV name
   location                        = var.location
   resource_group_name             = var.resource_group_name
   sku_name                        = var.key_vault_config.sku_name
@@ -343,20 +343,20 @@ resource "azurerm_key_vault" "kv" {
     content {
       tenant_id = data.azurerm_client_config.current.tenant_id
       object_id = data.azurerm_client_config.current.object_id
-      
+
       key_permissions = [
-        "Backup", "Create", "Decrypt", "Delete", "Encrypt", "Get", "Import", 
-        "List", "Purge", "Recover", "Restore", "Sign", "UnwrapKey", 
+        "Backup", "Create", "Decrypt", "Delete", "Encrypt", "Get", "Import",
+        "List", "Purge", "Recover", "Restore", "Sign", "UnwrapKey",
         "Update", "Verify", "WrapKey", "Release", "Rotate", "GetRotationPolicy", "SetRotationPolicy"
       ]
-      
+
       secret_permissions = [
         "Backup", "Delete", "Get", "List", "Purge", "Recover", "Restore", "Set"
       ]
-      
+
       certificate_permissions = [
-        "Backup", "Create", "Delete", "DeleteIssuers", "Get", "GetIssuers", 
-        "Import", "List", "ListIssuers", "ManageContacts", "ManageIssuers", 
+        "Backup", "Create", "Delete", "DeleteIssuers", "Get", "GetIssuers",
+        "Import", "List", "ListIssuers", "ManageContacts", "ManageIssuers",
         "Purge", "Recover", "Restore", "SetIssuers", "Update"
       ]
     }
@@ -440,13 +440,13 @@ resource "azurerm_key_vault_secret" "secrets" {
 #     command = <<-EOT
 #       set -e
 #       echo "🔓 Enabling Key Vault access for destroy operations..."
-      
+
 #       # Function to retry command
 #       retry_cmd() {
 #         local cmd="$1"
 #         local max_attempts=3
 #         local attempt=1
-        
+
 #         while [ $attempt -le $max_attempts ]; do
 #           if eval "$cmd"; then
 #             return 0
@@ -456,17 +456,17 @@ resource "azurerm_key_vault_secret" "secrets" {
 #         done
 #         return 1
 #       }
-      
+
 #       # Enable public access
 #       retry_cmd "az keyvault update --name '${self.triggers.key_vault_name}' --resource-group '${self.triggers.resource_group}' --public-network-access Enabled --default-action Allow" || echo "Failed to enable public access"
-      
+
 #       # Grant current user ALL permissions for destroy operations
 #       CURRENT_USER_ID=$(az ad signed-in-user show --query id -o tsv 2>/dev/null || echo "")
 #       if [ -n "$CURRENT_USER_ID" ]; then
 #         echo "Granting full Key Vault permissions to current user: $CURRENT_USER_ID"
 #         retry_cmd "az keyvault set-policy --name '${self.triggers.key_vault_name}' --object-id '$CURRENT_USER_ID' --key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey release rotate getRotationPolicy setRotationPolicy --secret-permissions backup delete get list purge recover restore set --certificate-permissions backup create delete deleteIssuers get getIssuers import list listIssuers manageContacts manageIssuers purge recover restore setIssuers update" || echo "Failed to set full user permissions"
 #       fi
-      
+
 #       echo "✅ Key Vault access setup completed"
 #     EOT
 #   }
@@ -522,7 +522,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "fw_policy_rules" {
         for_each = application_rule_collection.value.rules
         content {
           name = rule.value.name
-          
+
           dynamic "protocols" {
             for_each = rule.value.protocols
             content {
@@ -530,7 +530,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "fw_policy_rules" {
               port = protocols.value.port
             }
           }
-          
+
           source_addresses  = rule.value.source_addresses
           destination_fqdns = rule.value.destination_fqdns
         }
@@ -620,8 +620,8 @@ resource "azurerm_web_application_firewall_policy" "app_gw_waf_policy" {
 # ✅ ADD: Data source for subnet lookup as fallback
 data "azurerm_subnet" "app_gateway_subnet" {
   count = var.app_gateway_config != null ? 1 : 0
-  
-  name                 = "snet-hub-agw-POCpub-1"  # The actual subnet name
+
+  name                 = "snet-hub-agw-POCpub-1" # The actual subnet name
   virtual_network_name = "vnet-hub-POCpub-1"     # The VNet name
   resource_group_name  = var.network_resource_group_name
 }
@@ -646,7 +646,7 @@ resource "azurerm_application_gateway" "app_gw" {
     for_each = var.app_gateway_config.gateway_ip_configuration
     content {
       name      = gateway_ip_configuration.value.name
-      subnet_id = var.subnet_ids[gateway_ip_configuration.value.subnet_id]  # Use variable lookup
+      subnet_id = var.subnet_ids[gateway_ip_configuration.value.subnet_id] # Use variable lookup
     }
   }
 

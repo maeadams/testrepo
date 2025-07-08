@@ -1,6 +1,6 @@
 variable "location" {
   description = "rg location."
-  type = string
+  type        = string
 }
 
 # -----------------------------------------------------------------------------
