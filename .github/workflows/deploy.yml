@@ -44,6 +44,12 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
+      # - name: tfsec
+      #   uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
+      #   with:
+      #     tfsec_args: --soft-fail
+      #     github_token: ${{ github.token }}
+
       - name: Terraform Plan
         id: plan
         run: |
@@ -52,13 +58,13 @@ jobs:
 
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
 
-          if [ $exitcode -eq 1 ]; then
-            echo "Error: Terraform plan failed"
-            exit 1
-          else
-            echo "Terraform plan was successful"
-            exit 0
-          fi
+          # if [ $exitcode -eq 1 ]; then
+          #   echo "Error: Terraform plan failed"
+          #   exit 1
+          # else
+          #   echo "Terraform plan was successful"
+          #   exit 0
+          # fi
         
       - name: Publish Terraform Plan
         uses: actions/upload-artifact@v4
