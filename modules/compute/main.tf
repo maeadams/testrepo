@@ -356,7 +356,7 @@ resource "azurerm_virtual_machine_extension" "ama_linux" {
 
   depends_on = [
     azurerm_linux_virtual_machine.linux_vm,
-    null_resource.start_linux_vms_before_extension_destroy
+    #null_resource.start_linux_vms_before_extension_destroy
   ]
 }
 
