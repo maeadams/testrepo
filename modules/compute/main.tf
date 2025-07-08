@@ -468,7 +468,7 @@ resource "azurerm_virtual_machine_extension" "vm_auto_start" {
 
   depends_on = [
     azurerm_windows_virtual_machine.win_vm,
-    null_resource.start_windows_vms_before_extension_destroy
+    #null_resource.start_windows_vms_before_extension_destroy
   ]
 }
 
