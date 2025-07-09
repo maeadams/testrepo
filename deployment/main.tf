@@ -73,6 +73,6 @@ provider "azurerm" {
 # }
 
 resource "azurerm_resource_group" "example" {
-  name     = "test-pipeline-poc"
+  name     = "test2-pipeline-poc"
   location = var.location
 }
