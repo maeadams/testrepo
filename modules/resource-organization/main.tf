@@ -10,7 +10,7 @@ resource "azurerm_management_group" "mg" {
 
   name                       = each.value.name
   display_name               = each.value.display_name
-  parent_management_group_id = data.azurerm_management_group.root[each.key].id
+  parent_management_group_id = lookup(each.value, "parent_id", null)
 }
 
 # ---------------------------------------------------------------------------
