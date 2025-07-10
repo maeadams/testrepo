@@ -8,9 +8,9 @@ location = "France Central"
 # -----------------------------------------------------------------------------
 
 management_group_ids = {
-    root_management_group = {
-        name = "CLT Root POC France Central"
-    }
+  root_management_group = {
+    name = "CLT Root POC France Central"
+  }
 }
 management_group_config = {
   "root" = {
@@ -1303,31 +1303,31 @@ route_tables = {
     }
   }
 }
-  # -----------------------------------------------------------------------------
-  # VPN Gateway Configuration (OnPrem <-> Hub Network)
-  # -----------------------------------------------------------------------------
-  vpn_gateway_config = null
+# -----------------------------------------------------------------------------
+# VPN Gateway Configuration (OnPrem <-> Hub Network)
+# -----------------------------------------------------------------------------
+vpn_gateway_config = null
 
-  # ExpressRoute Gateway (if needed instead of VPN)
-  expressroute_gateway_config = null
+# ExpressRoute Gateway (if needed instead of VPN)
+expressroute_gateway_config = null
 
-  # Bastion Host Configuration
-  bastion_host_config = {
-    name       = "bas-hub-POCpub-1"
-    subnet_key = "snet_hub_bastion"
-    tags = {
-      Environment = "POC"
-      Purpose     = "SecureAccess_AdminVM_Only"
-    }
+# Bastion Host Configuration
+bastion_host_config = {
+  name       = "bas-hub-POCpub-1"
+  subnet_key = "snet_hub_bastion"
+  tags = {
+    Environment = "POC"
+    Purpose     = "SecureAccess_AdminVM_Only"
   }
+}
 
-  # Private Endpoint Configs
-  private_endpoint_configs = {}
+# Private Endpoint Configs
+private_endpoint_configs = {}
 
-  # Flow Log Configuration - Set to null to use default NSG flow log configuration
-  flow_log_config = null
-  # Hub Default Route Table - Updated for Peering
-  
+# Flow Log Configuration - Set to null to use default NSG flow log configuration
+flow_log_config = null
+# Hub Default Route Table - Updated for Peering
+
 # -----------------------------------------------------------------------------
 # WEB APPLICATIONS CONFIGURATION
 # -----------------------------------------------------------------------------

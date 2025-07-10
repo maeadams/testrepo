@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------------
 data "azurerm_management_group" "root" {
   for_each = var.management_group_ids
-  name = each.value.name
+  name     = each.value.name
 }
 
 output "display_name" {
