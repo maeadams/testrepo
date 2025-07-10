@@ -1282,6 +1282,21 @@ route_tables = {
       Purpose     = "AGW-to-Backend-Pool"
     }
   }
+  "rt-hub-default-POCpub-1" = {
+    routes = [
+      {
+        name                   = "Route-to-OnPrem-via-Peering"
+        address_prefix         = "192.168.0.0/22"
+        next_hop_type          = "VnetLocal"
+        next_hop_in_ip_address = null
+      }
+    ]
+    tags = {
+      Environment = "POC"
+      Purpose     = "Hub-Default-Routing-Peering"
+    }
+  }
+}
   # -----------------------------------------------------------------------------
   # VPN Gateway Configuration (OnPrem <-> Hub Network)
   # -----------------------------------------------------------------------------
