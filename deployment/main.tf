@@ -67,11 +67,11 @@ provider "time" {}
 # RESOURCE ORGANIZATION MODULE
 # =============================================================================
 module "resource_organization" {
-  source          = "../modules/resource-organization"
+  source                  = "../modules/resource-organization"
   management_group_config = var.management_group_config
   policy_definitions      = var.policy_definitions
   policy_assignments      = var.policy_assignments
-  resource_groups = var.resource_groups
+  resource_groups         = var.resource_groups
 }
 # =============================================================================
 # FRONTEND EXPOSED WEB APPLICATIONS MODULE
