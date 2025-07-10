@@ -8,7 +8,9 @@ location = "France Central"
 # -----------------------------------------------------------------------------
 
 management_group_ids = {
-    name = "CLT Root POC France Central"
+    root_management_group = {
+        name = "CLT Root POC France Central"
+    }
 }
 management_group_config = {
   "root" = {

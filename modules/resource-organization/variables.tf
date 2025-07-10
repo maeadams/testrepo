@@ -39,7 +39,7 @@ variable "resource_groups" {
   }))
 }
 variable "management_group_ids" {
-  description = "Resource group configurations"
+  description = "management groups ids"
   type = map(object({
     name     = string
     location = string
