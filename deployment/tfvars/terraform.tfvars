@@ -19,7 +19,6 @@ management_group_config = {
     #parent_id    = data.azurerm_management_group.root.id
   }
 }
-
 policy_definitions = {
   "DenyExpensiveVMs" = {
     policy_type  = "Custom"
