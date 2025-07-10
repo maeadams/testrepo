@@ -7,12 +7,6 @@ location = "France Central"
 # Resource Organization (EXACT STRUCTURE)
 # -----------------------------------------------------------------------------
 
-# management_group_ids = {
-#   root_management_group = {
-#     name = "mg-cltroot-POCpub-1"
-#     location = "France Central"
-#   }
-# }
 # management_group_config = {
 #   "root" = {
 #     name         = "mg-cltroot-POCpub-2"
@@ -67,24 +61,24 @@ location = "France Central"
 # TARGET RESOURCE GROUP STRUCTURE (6 groups)
 resource_groups = {
   # On-Premises Integration
-#   "rg_onprem" = {
-#     name     = "on-prem"
-#     location = "France Central"
-#     tags = {
-#       Environment = "POC"
-#       Purpose     = "OnPremiseSimulation"
-#     }
-#   }
+  "rg_onprem" = {
+    name     = "on-prem"
+    location = "France Central"
+    tags = {
+      Environment = "POC"
+      Purpose     = "OnPremiseSimulation"
+    }
+  }
 
-#   # Network Hub (Central Hub) - Consolidates network, security, admin, shared services
-#   "rg_network_hub" = {
-#     name     = "network-hub"
-#     location = "France Central"
-#     tags = {
-#       Environment = "POC"
-#       Purpose     = "CentralizedHubInfrastructure"
-#     }
-#   }
+  # Network Hub (Central Hub) - Consolidates network, security, admin, shared services
+  "rg_network_hub" = {
+    name     = "network-hub"
+    location = "France Central"
+    tags = {
+      Environment = "POC"
+      Purpose     = "CentralizedHubInfrastructure"
+    }
+  }
 
   # Frontend Exposed Connected Apps
   "rg_fe_exposed_apps" = {
@@ -107,24 +101,24 @@ resource_groups = {
   }
 
   # Frontend Non-Exposed Connected Apps
-  "rg_fe_nonexposed_apps" = {
-    name     = "fe-non-exposed-connected-apps"
-    location = "France Central"
-    tags = {
-      Environment = "POC"
-      Purpose     = "FrontendNonExposedApplications"
-    }
-  }
+#   "rg_fe_nonexposed_apps" = {
+#     name     = "fe-non-exposed-connected-apps"
+#     location = "France Central"
+#     tags = {
+#       Environment = "POC"
+#       Purpose     = "FrontendNonExposedApplications"
+#     }
+#   }
 
-  # Backend Non-Exposed Connected Apps
-  "rg_be_nonexposed_apps" = {
-    name     = "be-non-exposed-connected-apps"
-    location = "France Central"
-    tags = {
-      Environment = "POC"
-      Purpose     = "BackendNonExposedDatabases"
-    }
-  }
+#   # Backend Non-Exposed Connected Apps
+#   "rg_be_nonexposed_apps" = {
+#     name     = "be-non-exposed-connected-apps"
+#     location = "France Central"
+#     tags = {
+#       Environment = "POC"
+#       Purpose     = "BackendNonExposedDatabases"
+#     }
+#   }
 }
 # -----------------------------------------------------------------------------
 # Network Configuration 
