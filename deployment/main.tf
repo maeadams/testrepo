@@ -77,7 +77,7 @@ module "resource_organization" {
 # FRONTEND EXPOSED WEB APPLICATIONS MODULE
 # =============================================================================
 module "fe_exposed_webapp" {
-  source = "./modules/application"
+  source = "../modules/application"
 
   # ---------------------------------------------------------------------------
   # 1.  Web-app objects to deploy in THIS module instance
