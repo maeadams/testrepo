@@ -10,12 +10,12 @@ management_group_config = {
   "root" = {
     name         = "mg-cltroot-POCpub-2"
     display_name = "CLT Root2 POC France Central"
-    parent_id    =  "/providers/Microsoft.Management/managementGroups/CLT Root POC France Central"       #"CLT Root POC France Central"
+    parent_id    = "CLT Root POC France Central"
   }
 }
 
 policy_definitions = {
-  "DenyExpensiveVMs" = {
+  "DenyExpensiveVMs2" = {
     policy_type  = "Custom"
     mode         = "All"
     display_name = "Deny Expensive VM SKUs poc"
