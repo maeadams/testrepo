@@ -110,13 +110,13 @@ spoke_vnet_configs = {
 
 # EXACT SUBNET CONFIGURATION
 subnet_configs = {
- "snet_sqlmi_nonexpose" = {
+  "snet_sqlmi_nonexpose" = {
     name                   = "snet-sqlmi-nonexpose-POCpub-1"
-    address_prefixes       = ["10.1.0.192/27"]  # /27 minimum for SQL MI (32 IPs)
+    address_prefixes       = ["10.1.0.192/27"] # /27 minimum for SQL MI (32 IPs)
     virtual_network_name   = "vnet-spoke-nonexpose-POCpub-1"
     network_security_group = "nsg-nonexpose-back-POCpub-1"
     route_table            = "rt-nonexpose-POCpub-1"
-    
+
     # SQL MI delegation
     delegation = {
       name               = "sqlmi-delegation"
@@ -471,170 +471,170 @@ nsg_rules = {
   ]
 
   # VNet app connectée non exposée - Subnet Back => SQL MI with required network intent policy rules
-# VNet app connectée non exposée - Subnet Back => SQL MI with COMPLETE network intent policy rules
-"nsg-nonexpose-back-POCpub-1" = [
-  {
-    name                       = "Allow-SQL-From-Integration"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "1433"
-    source_address_prefix      = "10.1.0.0/26"
-    destination_address_prefix = "*"
-    description                = "Subnet Back => SQL + filtrage IP from Integration subnet"
-  },
-  {
-    name                       = "Allow-HTTPS-PrivateEndpoint"
-    priority                   = 110
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "VirtualNetwork"
-    destination_address_prefix = "*"
-    description                = "Allow HTTPS for Private Endpoint traffic"
-  },
-  # ✅ COMPLETE SQL MI Network Intent Policy Rules
-  {
-    name                       = "Allow-Azure-LoadBalancer-HealthProbe"
-    priority                   = 120
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "*"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefix      = "AzureLoadBalancer"
-    destination_address_prefix = "10.1.0.192/27"
-    description                = "Required for SQL MI health monitoring"
-  },
-  {
-    name                       = "Allow-SqlMI-Internal-Inbound"
-    priority                   = 130
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "*"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefix      = "10.1.0.192/27"
-    destination_address_prefix = "10.1.0.192/27"
-    description                = "Required for SQL MI internal communication"
-  },
-  # ✅ OUTBOUND RULES - All required for SQL MI
-  {
-    name                       = "Allow-SqlMI-AAD-Outbound"
-    priority                   = 200
-    direction                  = "Outbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "10.1.0.192/27"
-    destination_address_prefix = "AzureActiveDirectory"
-    description                = "Required for SQL MI Azure AD authentication"
-  },
-  {
-    name                       = "Allow-SqlMI-OneDsCollector-Outbound"
-    priority                   = 210
-    direction                  = "Outbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "10.1.0.192/27"
-    destination_address_prefix = "OneDsCollector"
-    description                = "Required for SQL MI telemetry"
-  },
-  {
-    name                       = "Allow-SqlMI-Internal-Outbound"
-    priority                   = 220
-    direction                  = "Outbound"
-    access                     = "Allow"
-    protocol                   = "*"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefix      = "10.1.0.192/27"
-    destination_address_prefix = "10.1.0.192/27"
-    description                = "Required for SQL MI internal communication"
-  },
-  {
-    name                       = "Allow-SqlMI-Storage-FranceCentral-Outbound"
-    priority                   = 230
-    direction                  = "Outbound"
-    access                     = "Allow"
-    protocol                   = "*"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "10.1.0.192/27"
-    destination_address_prefix = "Storage.francecentral"
-    description                = "Required for SQL MI storage access"
-  },
-  {
-    name                       = "Allow-SqlMI-Storage-FranceSouth-Outbound"
-    priority                   = 240
-    direction                  = "Outbound"
-    access                     = "Allow"
-    protocol                   = "*"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "10.1.0.192/27"
-    destination_address_prefix = "Storage.francesouth"
-    description                = "Required for SQL MI storage access backup region"
-  },
-  # Admin/OnPrem access rules
-  {
-    name                       = "Allow-HTTP-From-AdminVM"
-    priority                   = 250
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "10.0.0.160/27"
-    destination_address_prefix = "*"
-    description                = "Allow HTTP from Admin VM subnet to PE"
-  },
-  {
-    name                       = "Allow-HTTPS-From-AdminVM"
-    priority                   = 251
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "10.0.0.160/27"
-    destination_address_prefix = "*"
-    description                = "Allow HTTPS from Admin VM subnet to PE"
-  },
-  {
-    name                       = "Allow-HTTP-From-OnPremVM"
-    priority                   = 252
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "192.168.1.0/24"
-    destination_address_prefix = "*"
-    description                = "Allow HTTP from OnPrem VM subnet to PE"
-  },
-  {
-    name                       = "Allow-HTTPS-From-OnPremVM"
-    priority                   = 253
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "192.168.1.0/24"
-    destination_address_prefix = "*"
-    description                = "Allow HTTPS from OnPrem VM subnet to PE"
-  },
-  # ✅ REMOVED: Deny-All-Other rule - conflicts with SQL MI Network Intent Policy
-  # SQL MI Network Intent Policy automatically manages security
-]
+  # VNet app connectée non exposée - Subnet Back => SQL MI with COMPLETE network intent policy rules
+  "nsg-nonexpose-back-POCpub-1" = [
+    {
+      name                       = "Allow-SQL-From-Integration"
+      priority                   = 100
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "1433"
+      source_address_prefix      = "10.1.0.0/26"
+      destination_address_prefix = "*"
+      description                = "Subnet Back => SQL + filtrage IP from Integration subnet"
+    },
+    {
+      name                       = "Allow-HTTPS-PrivateEndpoint"
+      priority                   = 110
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "*"
+      description                = "Allow HTTPS for Private Endpoint traffic"
+    },
+    # ✅ COMPLETE SQL MI Network Intent Policy Rules
+    {
+      name                       = "Allow-Azure-LoadBalancer-HealthProbe"
+      priority                   = 120
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "*"
+      source_address_prefix      = "AzureLoadBalancer"
+      destination_address_prefix = "10.1.0.192/27"
+      description                = "Required for SQL MI health monitoring"
+    },
+    {
+      name                       = "Allow-SqlMI-Internal-Inbound"
+      priority                   = 130
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "*"
+      source_address_prefix      = "10.1.0.192/27"
+      destination_address_prefix = "10.1.0.192/27"
+      description                = "Required for SQL MI internal communication"
+    },
+    # ✅ OUTBOUND RULES - All required for SQL MI
+    {
+      name                       = "Allow-SqlMI-AAD-Outbound"
+      priority                   = 200
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "10.1.0.192/27"
+      destination_address_prefix = "AzureActiveDirectory"
+      description                = "Required for SQL MI Azure AD authentication"
+    },
+    {
+      name                       = "Allow-SqlMI-OneDsCollector-Outbound"
+      priority                   = 210
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "10.1.0.192/27"
+      destination_address_prefix = "OneDsCollector"
+      description                = "Required for SQL MI telemetry"
+    },
+    {
+      name                       = "Allow-SqlMI-Internal-Outbound"
+      priority                   = 220
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "*"
+      source_address_prefix      = "10.1.0.192/27"
+      destination_address_prefix = "10.1.0.192/27"
+      description                = "Required for SQL MI internal communication"
+    },
+    {
+      name                       = "Allow-SqlMI-Storage-FranceCentral-Outbound"
+      priority                   = 230
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "10.1.0.192/27"
+      destination_address_prefix = "Storage.francecentral"
+      description                = "Required for SQL MI storage access"
+    },
+    {
+      name                       = "Allow-SqlMI-Storage-FranceSouth-Outbound"
+      priority                   = 240
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "10.1.0.192/27"
+      destination_address_prefix = "Storage.francesouth"
+      description                = "Required for SQL MI storage access backup region"
+    },
+    # Admin/OnPrem access rules
+    {
+      name                       = "Allow-HTTP-From-AdminVM"
+      priority                   = 250
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "10.0.0.160/27"
+      destination_address_prefix = "*"
+      description                = "Allow HTTP from Admin VM subnet to PE"
+    },
+    {
+      name                       = "Allow-HTTPS-From-AdminVM"
+      priority                   = 251
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "10.0.0.160/27"
+      destination_address_prefix = "*"
+      description                = "Allow HTTPS from Admin VM subnet to PE"
+    },
+    {
+      name                       = "Allow-HTTP-From-OnPremVM"
+      priority                   = 252
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "192.168.1.0/24"
+      destination_address_prefix = "*"
+      description                = "Allow HTTP from OnPrem VM subnet to PE"
+    },
+    {
+      name                       = "Allow-HTTPS-From-OnPremVM"
+      priority                   = 253
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "192.168.1.0/24"
+      destination_address_prefix = "*"
+      description                = "Allow HTTPS from OnPrem VM subnet to PE"
+    },
+    # ✅ REMOVED: Deny-All-Other rule - conflicts with SQL MI Network Intent Policy
+    # SQL MI Network Intent Policy automatically manages security
+  ]
 
 
   # Non-Exposé Compute NSG
@@ -780,7 +780,7 @@ nsg_rules = {
 
   # VNet app connecté exposée - Subnet Front => Http (Internet via AGW + OnPrem via Firewall)
   "nsg-expose-front-POCpub-1" = [
-      {
+    {
       name                       = "Allow-HTTPS-PrivateEndpoint"
       priority                   = 100
       direction                  = "Inbound"
@@ -929,7 +929,7 @@ nsg_rules = {
       destination_address_prefix = "*"
       description                = "Subnet Back => SQL + filtrage IP from Integration subnet"
     },
-  
+
     # Removed duplicate AdminVM/OnPremVM HTTP/HTTPS rules (present in nonexpose-back NSG)
     {
       name                       = "Deny-All-Other"
@@ -1126,63 +1126,63 @@ route_tables = {
     }
   }
   # Non-Exposé Route Table: AFW -> Next Hop -> Vnet Spoke App connectée non expo with SQL MI requirements
-# Non-Exposé Route Table: AFW -> Next Hop -> Vnet Spoke App connectée non expo with COMPLETE SQL MI requirements
-"rt-nonexpose-POCpub-1" = {
-  routes = [
-   {
-      name                   = "Route-to-AAD"
-      address_prefix         = "AzureActiveDirectory"
-      next_hop_type          = "Internet"
-      next_hop_in_ip_address = null
-    },
-    {
-      name                   = "Route-to-OneDsCollector"
-      address_prefix         = "OneDsCollector"
-      next_hop_type          = "Internet"
-      next_hop_in_ip_address = null
-    },
-    {
-      name                   = "Route-to-Storage-FranceCentral"
-      address_prefix         = "Storage.francecentral"
-      next_hop_type          = "Internet"
-      next_hop_in_ip_address = null
-    },
-    {
-      name                   = "Route-to-Storage-FranceSouth"
-      address_prefix         = "Storage.francesouth"
-      next_hop_type          = "Internet"
-      next_hop_in_ip_address = null
-    },
-    {
-      name                   = "SqlMI-Subnet-Local"
-      address_prefix         = "10.1.0.192/27"
-      next_hop_type          = "VnetLocal"
-      next_hop_in_ip_address = null
-    },
-    {
-      name                   = "Default-Route-via-AFW"
-      address_prefix         = "0.0.0.0/0"
-      next_hop_type          = "VirtualAppliance"
-      next_hop_in_ip_address = "10.0.0.4"
-    },
-    {
-      name                   = "Route-to-OnPrem"
-      address_prefix         = "192.168.0.0/22"
-      next_hop_type          = "VirtualAppliance"
-      next_hop_in_ip_address = "10.0.0.4"
-    },
-    {
-      name                   = "Route-to-Expose-Spoke"
-      address_prefix         = "10.2.0.0/24"
-      next_hop_type          = "VirtualAppliance"
-      next_hop_in_ip_address = "10.0.0.4"
+  # Non-Exposé Route Table: AFW -> Next Hop -> Vnet Spoke App connectée non expo with COMPLETE SQL MI requirements
+  "rt-nonexpose-POCpub-1" = {
+    routes = [
+      {
+        name                   = "Route-to-AAD"
+        address_prefix         = "AzureActiveDirectory"
+        next_hop_type          = "Internet"
+        next_hop_in_ip_address = null
+      },
+      {
+        name                   = "Route-to-OneDsCollector"
+        address_prefix         = "OneDsCollector"
+        next_hop_type          = "Internet"
+        next_hop_in_ip_address = null
+      },
+      {
+        name                   = "Route-to-Storage-FranceCentral"
+        address_prefix         = "Storage.francecentral"
+        next_hop_type          = "Internet"
+        next_hop_in_ip_address = null
+      },
+      {
+        name                   = "Route-to-Storage-FranceSouth"
+        address_prefix         = "Storage.francesouth"
+        next_hop_type          = "Internet"
+        next_hop_in_ip_address = null
+      },
+      {
+        name                   = "SqlMI-Subnet-Local"
+        address_prefix         = "10.1.0.192/27"
+        next_hop_type          = "VnetLocal"
+        next_hop_in_ip_address = null
+      },
+      {
+        name                   = "Default-Route-via-AFW"
+        address_prefix         = "0.0.0.0/0"
+        next_hop_type          = "VirtualAppliance"
+        next_hop_in_ip_address = "10.0.0.4"
+      },
+      {
+        name                   = "Route-to-OnPrem"
+        address_prefix         = "192.168.0.0/22"
+        next_hop_type          = "VirtualAppliance"
+        next_hop_in_ip_address = "10.0.0.4"
+      },
+      {
+        name                   = "Route-to-Expose-Spoke"
+        address_prefix         = "10.2.0.0/24"
+        next_hop_type          = "VirtualAppliance"
+        next_hop_in_ip_address = "10.0.0.4"
+      }
+    ]
+    tags = {
+      Environment = "POC"
+      Purpose     = "AFW-NextHop-NonExpose-SqlMI"
     }
-  ]
-  tags = {
-    Environment = "POC"
-    Purpose     = "AFW-NextHop-NonExpose-SqlMI"
   }
-}
 
 
   # Exposé Route Table: Sortie Internet NAT GW
@@ -1227,29 +1227,29 @@ route_tables = {
       Purpose     = "AGW-to-Backend-Pool"
     }
   }
-# -----------------------------------------------------------------------------
-# VPN Gateway Configuration (OnPrem <-> Hub Network)
-# -----------------------------------------------------------------------------
-vpn_gateway_config = null
+  # -----------------------------------------------------------------------------
+  # VPN Gateway Configuration (OnPrem <-> Hub Network)
+  # -----------------------------------------------------------------------------
+  vpn_gateway_config = null
 
-# ExpressRoute Gateway (if needed instead of VPN)
-expressroute_gateway_config = null
+  # ExpressRoute Gateway (if needed instead of VPN)
+  expressroute_gateway_config = null
 
-# Bastion Host Configuration
-bastion_host_config = {
-  name       = "bas-hub-POCpub-1"
-  subnet_key = "snet_hub_bastion"
-  tags = {
-    Environment = "POC"
-    Purpose     = "SecureAccess_AdminVM_Only"
+  # Bastion Host Configuration
+  bastion_host_config = {
+    name       = "bas-hub-POCpub-1"
+    subnet_key = "snet_hub_bastion"
+    tags = {
+      Environment = "POC"
+      Purpose     = "SecureAccess_AdminVM_Only"
+    }
   }
-}
 
-# Private Endpoint Configs
-private_endpoint_configs = {}
+  # Private Endpoint Configs
+  private_endpoint_configs = {}
 
-# Flow Log Configuration - Set to null to use default NSG flow log configuration
-flow_log_config = null
+  # Flow Log Configuration - Set to null to use default NSG flow log configuration
+  flow_log_config = null
   # Hub Default Route Table - Updated for Peering
   "rt-hub-default-POCpub-1" = {
     routes = [
@@ -1295,7 +1295,7 @@ app_service_plans = {
 }
 
 web_apps = {
- webapp_exposed = {
+  webapp_exposed = {
     name                = "webapp-expose-pocpub-1"
     resource_group_name = "fe-exposed-connected-apps"
     location            = "France Central"
@@ -1303,7 +1303,7 @@ web_apps = {
 
     os_type                       = "Windows"
     https_only                    = false
-    public_network_access_enabled = true  # ✅ REQUIRED for App Gateway
+    public_network_access_enabled = true # ✅ REQUIRED for App Gateway
 
     vnet_integration_enabled = true
     vnet_integration_subnet  = "snet_integration_expose"
@@ -1315,13 +1315,13 @@ web_apps = {
     ip_restrictions = [
       {
         name       = "AllowAppGatewaySubnet"
-        ip_address = "10.0.0.64/26"  # App Gateway subnet
+        ip_address = "10.0.0.64/26" # App Gateway subnet
         priority   = 100
         action     = "Allow"
       },
       {
         name       = "DenyAllOther"
-        ip_address = "0.0.0.0/0"     # Deny everything else
+        ip_address = "0.0.0.0/0" # Deny everything else
         priority   = 300
         action     = "Deny"
       }

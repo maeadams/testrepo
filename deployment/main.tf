@@ -67,14 +67,14 @@ provider "time" {}
 # RESOURCE ORGANIZATION MODULE
 # =============================================================================
 module "resource_organization" {
-  source = "./modules/resource-organization"
-  resource_groups         = var.resource_groups
+  source          = "./modules/resource-organization"
+  resource_groups = var.resource_groups
 }
 module "web_app" {
   source = "./modules/application"
   web_apps = {
     app_service_plans = var.app_service_plans
-    web_apps = var.web_apps
+    web_apps          = var.web_apps
   }
 }
 module "network" {
