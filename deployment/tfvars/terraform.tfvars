@@ -1321,21 +1321,7 @@ route_tables = {
   # Flow Log Configuration - Set to null to use default NSG flow log configuration
   flow_log_config = null
   # Hub Default Route Table - Updated for Peering
-  "rt-hub-default-POCpub-1" = {
-    routes = [
-      {
-        name                   = "Route-to-OnPrem-via-Peering"
-        address_prefix         = "192.168.0.0/22"
-        next_hop_type          = "VnetLocal"
-        next_hop_in_ip_address = null
-      }
-    ]
-    tags = {
-      Environment = "POC"
-      Purpose     = "Hub-Default-Routing-Peering"
-    }
-  }
-}
+  
 # -----------------------------------------------------------------------------
 # WEB APPLICATIONS CONFIGURATION
 # -----------------------------------------------------------------------------
