@@ -15,7 +15,7 @@ management_group_config = {
 }
 
 policy_definitions = {
-  "DenyExpensiveVMs2" = {
+  "DenyExpensiveVMs" = {
     policy_type  = "Custom"
     mode         = "All"
     display_name = "Deny Expensive VM SKUs poc"
