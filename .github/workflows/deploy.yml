@@ -44,12 +44,6 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      # - name: tfsec
-      #   uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
-      #   with:
-      #     tfsec_args: --soft-fail
-      #     github_token: ${{ github.token }}
-
       - name: Terraform Plan
         id: plan
         run: |
@@ -72,96 +66,6 @@ jobs:
           name: tfplan
           path: ./deployment/main.tfplan
 
-      # - name: Update Pull Request
-      #   uses: actions/github-script@v6
-      #   env:
-      #     PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     script: |
-      #       const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-      #       #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-      #       #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-      #       #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-  
-      #       <details><summary>Show Plan</summary>
-  
-      #       \`\`\`\n
-      #       ${process.env.PLAN}
-      #       \`\`\`
-  
-      #       </details>
-  
-      #       *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
-  
-      #       github.rest.issues.createComment({
-      #         issue_number: context.issue.number,
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         body: output
-      #       })
-      
-      # - name: Terraform Plan Status
-      #   if: steps.plan.outcome == 'failure'
-      #   run: exit 1
-
-      # - name: Create String Output
-      #   id: tf-plan-string
-      #   run: |
-      #       TERRAFORM_PLAN=$(terraform show -no-color main.tfplan)
-            
-      #       delimiter="$(openssl rand -hex 8)"
-      #       echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
-      #       echo "## Terraform Plan Output" >> $GITHUB_OUTPUT
-      #       echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
-      #       echo "" >> $GITHUB_OUTPUT
-      #       echo '```terraform' >> $GITHUB_OUTPUT
-      #       echo "$TERRAFORM_PLAN" >> $GITHUB_OUTPUT
-      #       echo '```' >> $GITHUB_OUTPUT
-      #       echo "</details>" >> $GITHUB_OUTPUT
-      #       echo "${delimiter}" >> $GITHUB_OUTPUT
-
-      # - name: Publish Terraform Plan to Task Summary
-      #   env:
-      #     SUMMARY: ${{ steps.tf-plan-string.outputs.summary }}
-      #   run: |
-      #     echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
-
-      # - name: Push Terraform Output to PR
-      #   if: github.ref != 'refs/heads/main'
-      #   uses: actions/github-script@v7
-      #   env:
-      #     SUMMARY: "${{ steps.tf-plan-string.outputs.summary }}"
-      #   with:
-      #       github-token: ${{ secrets.GITHUB_TOKEN }}
-      #       script: |
-      #           const body = `${process.env.SUMMARY}`;
-      #           github.rest.issues.createComment({
-      #               issue_number: context.issue.number,
-      #               owner: context.repo.owner,
-      #               repo: context.repo.repo,
-      #               body: body
-      #           })
-  # manual-approval:
-  #   name: manual approval
-  #   runs-on: ubuntu-latest
-  #   needs: terraform-plan
-  #   if: success()
-
-  #   permissions:
-  #     issues: write
-  #     contents: read
-
-  #   steps: 
-  #     - name: Await for manual approval
-  #       uses: trstringer/manual-approval@v1
-  #       with:
-  #         secret: ${{ github.TOKEN }}
-  #         approvers: maeadams #add the usernames of the users who can approve the deployment
-  #         minimum-approvals: 1 #specify the number of approvals needed
-  #         issue-title: "Manual Approval Required for Terraform Apply"
-  #         issue-body: "Please approve or deny the deployment."
-  #         exclude-workflow-initiator-as-approver: false
   terraform-apply:
     needs: terraform-plan
     name: Terraform Apply
