@@ -51,15 +51,6 @@ variable "resource_groups" {
   }))
   default = {}
 }
-variable "management_group_ids" {
-  description = "data source of management Groups id."
-  type = map(object({
-    name     = string
-    location = string
-    tags     = optional(map(string))
-  }))
-  default = {}
-}
 
 # -----------------------------------------------------------------------------
 # Network Module Variables

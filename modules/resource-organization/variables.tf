@@ -38,11 +38,4 @@ variable "resource_groups" {
     tags     = optional(map(string))
   }))
 }
-variable "management_group_ids" {
-  description = "management groups ids"
-  type = map(object({
-    name     = string
-    location = string
-    tags     = optional(map(string))
-  }))
-}
+

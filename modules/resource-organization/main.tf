@@ -1,10 +1,7 @@
 # ---------------------------------------------------------------------------
 # Management Groups
 # ---------------------------------------------------------------------------
-data "azurerm_management_group" "root" {
-  for_each = var.management_group_ids
-  name     = each.value.name
-}
+
 resource "azurerm_management_group" "mg" {
   for_each = var.management_group_config
 
