@@ -5,10 +5,6 @@ data "azurerm_management_group" "root" {
   for_each = var.management_group_ids
   name     = each.value.name
 }
-
-output "display_name" {
-  value = data.azurerm_management_group.root[each.value].display_name
-}
 resource "azurerm_management_group" "mg" {
   for_each = var.management_group_config
 
