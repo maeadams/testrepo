@@ -6,11 +6,15 @@ location = "France Central"
 # -----------------------------------------------------------------------------
 # Resource Organization (EXACT STRUCTURE)
 # -----------------------------------------------------------------------------
+
+management_group_ids = {
+    name = "CLT Root POC France Central"
+}
 management_group_config = {
   "root" = {
     name         = "mg-cltroot-POCpub-2"
     display_name = "CLT Root2 POC France Central"
-    parent_id    = "CLT Root POC France Central"
+    #parent_id    = data.azurerm_management_group.root.id
   }
 }
 
