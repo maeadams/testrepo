@@ -67,18 +67,54 @@ provider "time" {}
 # RESOURCE ORGANIZATION MODULE
 # =============================================================================
 module "resource_organization" {
-  source          = "./modules/resource-organization"
+  source          = "../modules/resource-organization"
+  management_group_config = var.management_group_config
+  policy_definitions      = var.policy_definitions
+  policy_assignments      = var.policy_assignments
   resource_groups = var.resource_groups
 }
-module "web_app" {
+# =============================================================================
+# FRONTEND EXPOSED WEB APPLICATIONS MODULE
+# =============================================================================
+module "fe_exposed_webapp" {
   source = "./modules/application"
+
+  # ---------------------------------------------------------------------------
+  # 1.  Web-app objects to deploy in THIS module instance
+  # ---------------------------------------------------------------------------
+  # Pass ONLY the exposed app, so every service_plan_key you reference
+  # exists in the accompanying app_service_plans map.
   web_apps = {
-    app_service_plans = var.app_service_plans
-    web_apps          = var.web_apps
+    webapp_exposed = var.web_apps["webapp_exposed"]
   }
+
+  # ---------------------------------------------------------------------------
+  # 2.  App-Service Plan(s) used by those web-apps
+  # ---------------------------------------------------------------------------
+  app_service_plans = {
+    asp_fe_exposed = merge(
+      var.app_service_plans["asp_fe_exposed"],
+      {
+        # Override RG / location so the plan is created in the correct scope
+        resource_group_name = module.resource_organization.resource_group_names["rg_fe_exposed_apps"]
+        location            = var.location
+      }
+    )
+  }
+
+  # ---------------------------------------------------------------------------
+  # 3.  Networking inputs required for VNet-integration & private endpoints
+  # ---------------------------------------------------------------------------
+  subnet_ids           = module.network.subnet_ids
+  private_dns_zone_ids = module.network.private_dns_zone_ids
+
+  depends_on = [
+    module.resource_organization,
+    module.network
+  ]
 }
 module "network" {
-  source = "./modules/network"
+  source = "../modules/network"
 
   resource_group_name              = module.resource_organization.resource_group_names["rg_network_hub"]
   location                         = var.location

@@ -3,6 +3,61 @@
 # -----------------------------------------------------------------------------
 location = "France Central"
 
+# -----------------------------------------------------------------------------
+# Resource Organization (EXACT STRUCTURE)
+# -----------------------------------------------------------------------------
+management_group_config = {
+  "root" = {
+    name         = "mg-cltroot-POCpub-1"
+    display_name = "CLT Root POC France Central"
+    parent_id    = null
+  }
+}
+
+policy_definitions = {
+  "DenyExpensiveVMs" = {
+    policy_type  = "Custom"
+    mode         = "All"
+    display_name = "Deny Expensive VM SKUs"
+    description  = "Prevents deployment of expensive VM SKUs in POC environment"
+    policy_rule = {
+      if = {
+        allOf = [
+          {
+            field  = "type"
+            equals = "Microsoft.Compute/virtualMachines"
+          },
+          {
+            anyOf = [
+              {
+                field = "Microsoft.Compute/virtualMachines/sku.name"
+                like  = "Standard_D*_v5"
+              },
+              {
+                field = "Microsoft.Compute/virtualMachines/sku.name"
+                like  = "Standard_E*"
+              }
+            ]
+          }
+        ]
+      }
+      then = {
+        effect = "deny"
+      }
+    }
+  }
+}
+
+policy_assignments = {
+  "DenyExpensiveVMs" = {
+    scope                  = "7445ae6f-a879-4d74-9a49-eebda848dc6c"
+    policy_definition_name = "DenyExpensiveVMs"
+    description            = "Prevent expensive VM deployments"
+    location               = "France Central"
+  }
+}
+
+
 # TARGET RESOURCE GROUP STRUCTURE (6 groups)
 resource_groups = {
   # On-Premises Integration
