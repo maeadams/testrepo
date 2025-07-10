@@ -8,9 +8,9 @@ location = "France Central"
 # -----------------------------------------------------------------------------
 management_group_config = {
   "root" = {
-    name         = "mg-cltroot-POCpub-1"
-    display_name = "CLT Root POC France Central"
-    parent_id    = null
+    name         = "mg-cltroot-POCpub-2"
+    display_name = "CLT Root2 POC France Central"
+    parent_id    = "mg-cltroot-POCpub-1"
   }
 }
 
@@ -18,7 +18,7 @@ policy_definitions = {
   "DenyExpensiveVMs" = {
     policy_type  = "Custom"
     mode         = "All"
-    display_name = "Deny Expensive VM SKUs"
+    display_name = "Deny Expensive VM SKUs poc"
     description  = "Prevents deployment of expensive VM SKUs in POC environment"
     policy_rule = {
       if = {
