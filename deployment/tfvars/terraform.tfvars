@@ -17,7 +17,7 @@ management_group_config = {
   "root" = {
     name         = "mg-cltroot-POCpub-2"
     display_name = "CLT Root2 POC France Central"
-    parent_id    = "root_management_group"
+    parent_id    = "mg-cltroot-POCpub-1"
   }
 }
 policy_definitions = {
