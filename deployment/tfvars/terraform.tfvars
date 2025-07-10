@@ -9,7 +9,7 @@ location = "France Central"
 
 management_group_ids = {
   root_management_group = {
-    name = "CLT Root POC France Central"
+    name = "mg-cltroot-POCpub-1"
     location = "France Central"
   }
 }
