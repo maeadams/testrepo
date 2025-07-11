@@ -72,7 +72,6 @@ module "resource_organization" {
   policy_definitions      = var.policy_definitions
   policy_assignments      = var.policy_assignments
   resource_groups         = var.resource_groups
-  management_group_ids    = var.management_group_ids
 }
 # =============================================================================
 # FRONTEND EXPOSED WEB APPLICATIONS MODULE
