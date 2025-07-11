@@ -3,7 +3,7 @@ on:
  workflow_dispatch:
 
 jobs:
- tf-destroy:
+ Terraform-Plan:
    runs-on: ubuntu-latest
    env:
      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -50,9 +50,35 @@ jobs:
         with:
           name: tfplan
           path: ./deployment/main.tfplan
+  Terraform-destroy:
+    needs: terraform-plan
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+    environment: destroy
+    defaults:
+      run:
+        working-directory: ../deployment
 
-      - name: Terraform Destroy
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend-config="resource_group_name=${{secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME}}" -backend-config="storage_account_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME}}" -backend-config="container_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}"
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: ./deployment
+
+      - name: Terraform Apply
         run: terraform destroy -auto-approve "./main.tfplan"
+      
    
   
    
