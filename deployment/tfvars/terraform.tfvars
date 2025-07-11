@@ -462,782 +462,782 @@ nsg_rules = {
   ]
 
   # VNet app connectée non exposée - Subnet Front => Http
-#   "nsg-nonexpose-front-POCpub-1" = [
-#     {
-#       name                       = "Allow-HTTP-From-AppGateway"
-#       priority                   = 100
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "80"
-#       source_address_prefix      = "10.0.0.64/26"
-#       destination_address_prefix = "*"
-#       description                = "Subnet Front => Http from Application Gateway"
-#     },
-#     {
-#       name                       = "Allow-HTTPS-From-AppGateway"
-#       priority                   = 110
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "10.0.0.64/26"
-#       destination_address_prefix = "*"
-#       description                = "Subnet Front => HTTPS from Application Gateway"
-#     },
-#     {
-#       name                       = "Deny-Direct-Internet"
-#       priority                   = 4096
-#       direction                  = "Inbound"
-#       access                     = "Deny"
-#       protocol                   = "*"
-#       source_port_range          = "*"
-#       destination_port_range     = "*"
-#       source_address_prefix      = "Internet"
-#       destination_address_prefix = "*"
-#       description                = "Deny direct Internet access"
-#     },
-#     {
-#       name                       = "Allow-HTTP-From-AdminVM" # NEW
-#       priority                   = 120
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "80"
-#       source_address_prefix      = "10.0.0.160/27" # Hub Admin-VM subnet
-#       destination_address_prefix = "*"
-#       description                = "Admin VM → Web-App PE (HTTP)"
-#     },
-#     {
-#       name                       = "Allow-HTTPS-From-AdminVM" # NEW
-#       priority                   = 121
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "10.0.0.160/27"
-#       destination_address_prefix = "*"
-#       description                = "Admin VM → Web-App PE (HTTPS)"
-#     }
-#   ]
+  # "nsg-nonexpose-front-POCpub-1" = [
+  #   {
+  #     name                       = "Allow-HTTP-From-AppGateway"
+  #     priority                   = 100
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "80"
+  #     source_address_prefix      = "10.0.0.64/26"
+  #     destination_address_prefix = "*"
+  #     description                = "Subnet Front => Http from Application Gateway"
+  #   },
+  #   {
+  #     name                       = "Allow-HTTPS-From-AppGateway"
+  #     priority                   = 110
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "443"
+  #     source_address_prefix      = "10.0.0.64/26"
+  #     destination_address_prefix = "*"
+  #     description                = "Subnet Front => HTTPS from Application Gateway"
+  #   },
+  #   {
+  #     name                       = "Deny-Direct-Internet"
+  #     priority                   = 4096
+  #     direction                  = "Inbound"
+  #     access                     = "Deny"
+  #     protocol                   = "*"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "*"
+  #     source_address_prefix      = "Internet"
+  #     destination_address_prefix = "*"
+  #     description                = "Deny direct Internet access"
+  #   },
+  #   {
+  #     name                       = "Allow-HTTP-From-AdminVM" # NEW
+  #     priority                   = 120
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "80"
+  #     source_address_prefix      = "10.0.0.160/27" # Hub Admin-VM subnet
+  #     destination_address_prefix = "*"
+  #     description                = "Admin VM → Web-App PE (HTTP)"
+  #   },
+  #   {
+  #     name                       = "Allow-HTTPS-From-AdminVM" # NEW
+  #     priority                   = 121
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "443"
+  #     source_address_prefix      = "10.0.0.160/27"
+  #     destination_address_prefix = "*"
+  #     description                = "Admin VM → Web-App PE (HTTPS)"
+  #   }
+  # ]
 
-#   # VNet app connectée non exposée - Subnet Back => SQL MI with required network intent policy rules
-#   # VNet app connectée non exposée - Subnet Back => SQL MI with COMPLETE network intent policy rules
-#   "nsg-nonexpose-back-POCpub-1" = [
-#     {
-#       name                       = "Allow-SQL-From-Integration"
-#       priority                   = 100
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "1433"
-#       source_address_prefix      = "10.1.0.0/26"
-#       destination_address_prefix = "*"
-#       description                = "Subnet Back => SQL + filtrage IP from Integration subnet"
-#     },
-#     {
-#       name                       = "Allow-HTTPS-PrivateEndpoint"
-#       priority                   = 110
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "VirtualNetwork"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTPS for Private Endpoint traffic"
-#     },
-#     # ✅ COMPLETE SQL MI Network Intent Policy Rules
-#     {
-#       name                       = "Allow-Azure-LoadBalancer-HealthProbe"
-#       priority                   = 120
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "*"
-#       source_port_range          = "*"
-#       destination_port_range     = "*"
-#       source_address_prefix      = "AzureLoadBalancer"
-#       destination_address_prefix = "10.1.0.192/27"
-#       description                = "Required for SQL MI health monitoring"
-#     },
-#     {
-#       name                       = "Allow-SqlMI-Internal-Inbound"
-#       priority                   = 130
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "*"
-#       source_port_range          = "*"
-#       destination_port_range     = "*"
-#       source_address_prefix      = "10.1.0.192/27"
-#       destination_address_prefix = "10.1.0.192/27"
-#       description                = "Required for SQL MI internal communication"
-#     },
-#     # ✅ OUTBOUND RULES - All required for SQL MI
-#     {
-#       name                       = "Allow-SqlMI-AAD-Outbound"
-#       priority                   = 200
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "10.1.0.192/27"
-#       destination_address_prefix = "AzureActiveDirectory"
-#       description                = "Required for SQL MI Azure AD authentication"
-#     },
-#     {
-#       name                       = "Allow-SqlMI-OneDsCollector-Outbound"
-#       priority                   = 210
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "10.1.0.192/27"
-#       destination_address_prefix = "OneDsCollector"
-#       description                = "Required for SQL MI telemetry"
-#     },
-#     {
-#       name                       = "Allow-SqlMI-Internal-Outbound"
-#       priority                   = 220
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "*"
-#       source_port_range          = "*"
-#       destination_port_range     = "*"
-#       source_address_prefix      = "10.1.0.192/27"
-#       destination_address_prefix = "10.1.0.192/27"
-#       description                = "Required for SQL MI internal communication"
-#     },
-#     {
-#       name                       = "Allow-SqlMI-Storage-FranceCentral-Outbound"
-#       priority                   = 230
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "*"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "10.1.0.192/27"
-#       destination_address_prefix = "Storage.francecentral"
-#       description                = "Required for SQL MI storage access"
-#     },
-#     {
-#       name                       = "Allow-SqlMI-Storage-FranceSouth-Outbound"
-#       priority                   = 240
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "*"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "10.1.0.192/27"
-#       destination_address_prefix = "Storage.francesouth"
-#       description                = "Required for SQL MI storage access backup region"
-#     },
-#     # Admin/OnPrem access rules
-#     {
-#       name                       = "Allow-HTTP-From-AdminVM"
-#       priority                   = 250
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "80"
-#       source_address_prefix      = "10.0.0.160/27"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTP from Admin VM subnet to PE"
-#     },
-#     {
-#       name                       = "Allow-HTTPS-From-AdminVM"
-#       priority                   = 251
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "10.0.0.160/27"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTPS from Admin VM subnet to PE"
-#     },
-#     {
-#       name                       = "Allow-HTTP-From-OnPremVM"
-#       priority                   = 252
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "80"
-#       source_address_prefix      = "192.168.1.0/24"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTP from OnPrem VM subnet to PE"
-#     },
-#     {
-#       name                       = "Allow-HTTPS-From-OnPremVM"
-#       priority                   = 253
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "192.168.1.0/24"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTPS from OnPrem VM subnet to PE"
-#     },
-#     # ✅ REMOVED: Deny-All-Other rule - conflicts with SQL MI Network Intent Policy
-#     # SQL MI Network Intent Policy automatically manages security
-#   ]
+  # # VNet app connectée non exposée - Subnet Back => SQL MI with required network intent policy rules
+  # # VNet app connectée non exposée - Subnet Back => SQL MI with COMPLETE network intent policy rules
+  # "nsg-nonexpose-back-POCpub-1" = [
+  #   {
+  #     name                       = "Allow-SQL-From-Integration"
+  #     priority                   = 100
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "1433"
+  #     source_address_prefix      = "10.1.0.0/26"
+  #     destination_address_prefix = "*"
+  #     description                = "Subnet Back => SQL + filtrage IP from Integration subnet"
+  #   },
+  #   {
+  #     name                       = "Allow-HTTPS-PrivateEndpoint"
+  #     priority                   = 110
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "443"
+  #     source_address_prefix      = "VirtualNetwork"
+  #     destination_address_prefix = "*"
+  #     description                = "Allow HTTPS for Private Endpoint traffic"
+  #   },
+  #   # ✅ COMPLETE SQL MI Network Intent Policy Rules
+  #   {
+  #     name                       = "Allow-Azure-LoadBalancer-HealthProbe"
+  #     priority                   = 120
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "*"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "*"
+  #     source_address_prefix      = "AzureLoadBalancer"
+  #     destination_address_prefix = "10.1.0.192/27"
+  #     description                = "Required for SQL MI health monitoring"
+  #   },
+  #   {
+  #     name                       = "Allow-SqlMI-Internal-Inbound"
+  #     priority                   = 130
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "*"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "*"
+  #     source_address_prefix      = "10.1.0.192/27"
+  #     destination_address_prefix = "10.1.0.192/27"
+  #     description                = "Required for SQL MI internal communication"
+  #   },
+  #   # ✅ OUTBOUND RULES - All required for SQL MI
+  #   {
+  #     name                       = "Allow-SqlMI-AAD-Outbound"
+  #     priority                   = 200
+  #     direction                  = "Outbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "443"
+  #     source_address_prefix      = "10.1.0.192/27"
+  #     destination_address_prefix = "AzureActiveDirectory"
+  #     description                = "Required for SQL MI Azure AD authentication"
+  #   },
+  #   {
+  #     name                       = "Allow-SqlMI-OneDsCollector-Outbound"
+  #     priority                   = 210
+  #     direction                  = "Outbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "443"
+  #     source_address_prefix      = "10.1.0.192/27"
+  #     destination_address_prefix = "OneDsCollector"
+  #     description                = "Required for SQL MI telemetry"
+  #   },
+  #   {
+  #     name                       = "Allow-SqlMI-Internal-Outbound"
+  #     priority                   = 220
+  #     direction                  = "Outbound"
+  #     access                     = "Allow"
+  #     protocol                   = "*"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "*"
+  #     source_address_prefix      = "10.1.0.192/27"
+  #     destination_address_prefix = "10.1.0.192/27"
+  #     description                = "Required for SQL MI internal communication"
+  #   },
+  #   {
+  #     name                       = "Allow-SqlMI-Storage-FranceCentral-Outbound"
+  #     priority                   = 230
+  #     direction                  = "Outbound"
+  #     access                     = "Allow"
+  #     protocol                   = "*"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "443"
+  #     source_address_prefix      = "10.1.0.192/27"
+  #     destination_address_prefix = "Storage.francecentral"
+  #     description                = "Required for SQL MI storage access"
+  #   },
+  #   {
+  #     name                       = "Allow-SqlMI-Storage-FranceSouth-Outbound"
+  #     priority                   = 240
+  #     direction                  = "Outbound"
+  #     access                     = "Allow"
+  #     protocol                   = "*"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "443"
+  #     source_address_prefix      = "10.1.0.192/27"
+  #     destination_address_prefix = "Storage.francesouth"
+  #     description                = "Required for SQL MI storage access backup region"
+  #   },
+  #   # Admin/OnPrem access rules
+  #   {
+  #     name                       = "Allow-HTTP-From-AdminVM"
+  #     priority                   = 250
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "80"
+  #     source_address_prefix      = "10.0.0.160/27"
+  #     destination_address_prefix = "*"
+  #     description                = "Allow HTTP from Admin VM subnet to PE"
+  #   },
+  #   {
+  #     name                       = "Allow-HTTPS-From-AdminVM"
+  #     priority                   = 251
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "443"
+  #     source_address_prefix      = "10.0.0.160/27"
+  #     destination_address_prefix = "*"
+  #     description                = "Allow HTTPS from Admin VM subnet to PE"
+  #   },
+  #   {
+  #     name                       = "Allow-HTTP-From-OnPremVM"
+  #     priority                   = 252
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "80"
+  #     source_address_prefix      = "192.168.1.0/24"
+  #     destination_address_prefix = "*"
+  #     description                = "Allow HTTP from OnPrem VM subnet to PE"
+  #   },
+  #   {
+  #     name                       = "Allow-HTTPS-From-OnPremVM"
+  #     priority                   = 253
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "443"
+  #     source_address_prefix      = "192.168.1.0/24"
+  #     destination_address_prefix = "*"
+  #     description                = "Allow HTTPS from OnPrem VM subnet to PE"
+  #   },
+  #   # ✅ REMOVED: Deny-All-Other rule - conflicts with SQL MI Network Intent Policy
+  #   # SQL MI Network Intent Policy automatically manages security
+  # ]
 
 
-#   # Non-Exposé Compute NSG
-#   "nsg-nonexpose-compute-POCpub-1" = [
-#     {
-#       name                       = "Allow-SSH-From-Hub"
-#       priority                   = 100
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "22"
-#       source_address_prefix      = "10.0.0.160/27"
-#       destination_address_prefix = "*"
-#       description                = "Allow SSH from Hub compute"
-#     },
-#     {
-#       name                       = "Allow-RDP-From-Hub"
-#       priority                   = 110
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "3389"
-#       source_address_prefix      = "10.0.0.160/27"
-#       destination_address_prefix = "*"
-#       description                = "Allow RDP from Hub compute"
-#     }
-#   ]
+  # # Non-Exposé Compute NSG
+  # "nsg-nonexpose-compute-POCpub-1" = [
+  #   {
+  #     name                       = "Allow-SSH-From-Hub"
+  #     priority                   = 100
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "22"
+  #     source_address_prefix      = "10.0.0.160/27"
+  #     destination_address_prefix = "*"
+  #     description                = "Allow SSH from Hub compute"
+  #   },
+  #   {
+  #     name                       = "Allow-RDP-From-Hub"
+  #     priority                   = 110
+  #     direction                  = "Inbound"
+  #     access                     = "Allow"
+  #     protocol                   = "Tcp"
+  #     source_port_range          = "*"
+  #     destination_port_range     = "3389"
+  #     source_address_prefix      = "10.0.0.160/27"
+  #     destination_address_prefix = "*"
+  #     description                = "Allow RDP from Hub compute"
+  #   }
+  # ]
 
-#   # ✅ FIX: Application Gateway Subnet NSG - Required for AGW v2
-#   "nsg-hub-agw-POCpub-1" = [
-#     {
-#       name                       = "AllowGatewayManagerInbound"
-#       priority                   = 100
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "65200-65535"
-#       source_address_prefix      = "GatewayManager"
-#       destination_address_prefix = "*"
-#       description                = "Allow Azure Gateway Manager inbound traffic (required for AGW v2)"
-#     },
-#     {
-#       name                       = "AllowInternetInbound"
-#       priority                   = 110
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "80"
-#       source_address_prefix      = "Internet"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTP from Internet"
-#     },
-#     {
-#       name                       = "AllowHTTPSInbound"
-#       priority                   = 120
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "Internet"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTPS from Internet"
-#     },
-#     {
-#       name                       = "AllowAzureLoadBalancerInbound"
-#       priority                   = 130
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "*"
-#       source_port_range          = "*"
-#       destination_port_range     = "*"
-#       source_address_prefix      = "AzureLoadBalancer"
-#       destination_address_prefix = "*"
-#       description                = "Allow Azure Load Balancer health probes"
-#     },
-#     # ✅ ADD: Missing outbound rules for App Gateway
-#     {
-#       name                       = "AllowAppServiceOutbound"
-#       priority                   = 200
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "80"
-#       source_address_prefix      = "10.0.0.64/26"
-#       destination_address_prefix = "10.2.0.0/26"
-#       description                = "Allow HTTP to Exposed Web-App PE"
-#     },
-#     {
-#       name                       = "AllowAppServiceHTTPSOutbound"
-#       priority                   = 210
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "10.0.0.64/26"
-#       destination_address_prefix = "10.2.0.0/26"
-#       description                = "Allow HTTPS to Exposed Web-App PE"
-#     },
-#     {
-#       name                       = "AllowNonExposedWebAppHTTP"
-#       priority                   = 240
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "80"
-#       source_address_prefix      = "10.0.0.64/26"
-#       destination_address_prefix = "10.1.0.0/26"
-#       description                = "Allow HTTP to Non-Exposed Web-App PE"
-#     },
-#     {
-#       name                       = "AllowNonExposedWebAppHTTPS"
-#       priority                   = 250
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "10.0.0.64/26"
-#       destination_address_prefix = "10.1.0.0/26"
-#       description                = "Allow HTTPS to Non-Exposed Web-App PE"
-#     },
-#     {
-#       name                       = "AllowDNSOutbound"
-#       priority                   = 220
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "Udp"
-#       source_port_range          = "*"
-#       destination_port_range     = "53"
-#       source_address_prefix      = "10.0.0.64/26"
-#       destination_address_prefix = "168.63.129.16"
-#       description                = "Allow DNS queries to Azure DNS"
-#     }
-#   ]
+  # ✅ FIX: Application Gateway Subnet NSG - Required for AGW v2
+  "nsg-hub-agw-POCpub-1" = [
+    {
+      name                       = "AllowGatewayManagerInbound"
+      priority                   = 100
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "65200-65535"
+      source_address_prefix      = "GatewayManager"
+      destination_address_prefix = "*"
+      description                = "Allow Azure Gateway Manager inbound traffic (required for AGW v2)"
+    },
+    {
+      name                       = "AllowInternetInbound"
+      priority                   = 110
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "Internet"
+      destination_address_prefix = "*"
+      description                = "Allow HTTP from Internet"
+    },
+    {
+      name                       = "AllowHTTPSInbound"
+      priority                   = 120
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "Internet"
+      destination_address_prefix = "*"
+      description                = "Allow HTTPS from Internet"
+    },
+    {
+      name                       = "AllowAzureLoadBalancerInbound"
+      priority                   = 130
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "*"
+      source_address_prefix      = "AzureLoadBalancer"
+      destination_address_prefix = "*"
+      description                = "Allow Azure Load Balancer health probes"
+    },
+    # ✅ ADD: Missing outbound rules for App Gateway
+    {
+      name                       = "AllowAppServiceOutbound"
+      priority                   = 200
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "10.0.0.64/26"
+      destination_address_prefix = "10.2.0.0/26"
+      description                = "Allow HTTP to Exposed Web-App PE"
+    },
+    {
+      name                       = "AllowAppServiceHTTPSOutbound"
+      priority                   = 210
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "10.0.0.64/26"
+      destination_address_prefix = "10.2.0.0/26"
+      description                = "Allow HTTPS to Exposed Web-App PE"
+    },
+    {
+      name                       = "AllowNonExposedWebAppHTTP"
+      priority                   = 240
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "10.0.0.64/26"
+      destination_address_prefix = "10.1.0.0/26"
+      description                = "Allow HTTP to Non-Exposed Web-App PE"
+    },
+    {
+      name                       = "AllowNonExposedWebAppHTTPS"
+      priority                   = 250
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "10.0.0.64/26"
+      destination_address_prefix = "10.1.0.0/26"
+      description                = "Allow HTTPS to Non-Exposed Web-App PE"
+    },
+    {
+      name                       = "AllowDNSOutbound"
+      priority                   = 220
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "Udp"
+      source_port_range          = "*"
+      destination_port_range     = "53"
+      source_address_prefix      = "10.0.0.64/26"
+      destination_address_prefix = "168.63.129.16"
+      description                = "Allow DNS queries to Azure DNS"
+    }
+  ]
 
-#   # VNet app connecté exposée - Subnet Front => Http (Internet via AGW + OnPrem via Firewall)
-#   "nsg-expose-front-POCpub-1" = [
-#     {
-#       name                       = "Allow-HTTPS-PrivateEndpoint"
-#       priority                   = 100
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "VirtualNetwork"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTPS for Private Endpoint traffic"
-#     },
-#     {
-#       name                       = "Allow-HTTP-From-AppGateway"
-#       priority                   = 105
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "80"
-#       source_address_prefix      = "10.0.0.64/26"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTP from Application Gateway (Internet traffic)"
-#     },
-#     {
-#       name                       = "Allow-HTTPS-From-AppGateway"
-#       priority                   = 110
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "10.0.0.64/26"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTPS from Application Gateway (Internet traffic)"
-#     },
-#     {
-#       name                       = "Allow-HTTP-OnPrem-via-Firewall"
-#       priority                   = 115
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "80"
-#       source_address_prefix      = "192.168.0.0/22"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTP OnPrem traffic via Azure Firewall"
-#     },
-#     {
-#       name                       = "Allow-HTTPS-OnPrem-via-Firewall"
-#       priority                   = 116
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "192.168.0.0/22"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTPS OnPrem traffic via Azure Firewall"
-#     },
-#     {
-#       name                       = "Allow-RDP-OnPrem-via-Firewall"
-#       priority                   = 117
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "3389"
-#       source_address_prefix      = "192.168.0.0/22"
-#       destination_address_prefix = "*"
-#       description                = "Allow RDP OnPrem traffic via Azure Firewall"
-#     },
-#     {
-#       name                       = "Allow-SSH-OnPrem-via-Firewall"
-#       priority                   = 118
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "22"
-#       source_address_prefix      = "192.168.0.0/22"
-#       destination_address_prefix = "*"
-#       description                = "Allow SSH OnPrem traffic via Azure Firewall"
-#     },
-#     {
-#       name                       = "Allow-Outbound-NAT-Gateway"
-#       priority                   = 130
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "*"
-#       source_port_range          = "*"
-#       destination_port_range     = "*"
-#       source_address_prefix      = "*"
-#       destination_address_prefix = "*"
-#       description                = "Allow outbound to NAT Gateway"
-#     },
-#     {
-#       name                       = "Allow-HTTP-From-AdminVM" # NEW
-#       priority                   = 120
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "80"
-#       source_address_prefix      = "10.0.0.160/27" # Hub Admin-VM subnet
-#       destination_address_prefix = "*"
-#       description                = "Admin VM → Web-App PE (HTTP)"
-#     },
-#     {
-#       name                       = "Allow-HTTPS-From-AdminVM" # NEW
-#       priority                   = 121
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "10.0.0.160/27"
-#       destination_address_prefix = "*"
-#       description                = "Admin VM → Web-App PE (HTTPS)"
-#     },
+  # VNet app connecté exposée - Subnet Front => Http (Internet via AGW + OnPrem via Firewall)
+  "nsg-expose-front-POCpub-1" = [
+    {
+      name                       = "Allow-HTTPS-PrivateEndpoint"
+      priority                   = 100
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "VirtualNetwork"
+      destination_address_prefix = "*"
+      description                = "Allow HTTPS for Private Endpoint traffic"
+    },
+    {
+      name                       = "Allow-HTTP-From-AppGateway"
+      priority                   = 105
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "10.0.0.64/26"
+      destination_address_prefix = "*"
+      description                = "Allow HTTP from Application Gateway (Internet traffic)"
+    },
+    {
+      name                       = "Allow-HTTPS-From-AppGateway"
+      priority                   = 110
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "10.0.0.64/26"
+      destination_address_prefix = "*"
+      description                = "Allow HTTPS from Application Gateway (Internet traffic)"
+    },
+    {
+      name                       = "Allow-HTTP-OnPrem-via-Firewall"
+      priority                   = 115
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "192.168.0.0/22"
+      destination_address_prefix = "*"
+      description                = "Allow HTTP OnPrem traffic via Azure Firewall"
+    },
+    {
+      name                       = "Allow-HTTPS-OnPrem-via-Firewall"
+      priority                   = 116
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "192.168.0.0/22"
+      destination_address_prefix = "*"
+      description                = "Allow HTTPS OnPrem traffic via Azure Firewall"
+    },
+    {
+      name                       = "Allow-RDP-OnPrem-via-Firewall"
+      priority                   = 117
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "3389"
+      source_address_prefix      = "192.168.0.0/22"
+      destination_address_prefix = "*"
+      description                = "Allow RDP OnPrem traffic via Azure Firewall"
+    },
+    {
+      name                       = "Allow-SSH-OnPrem-via-Firewall"
+      priority                   = 118
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "22"
+      source_address_prefix      = "192.168.0.0/22"
+      destination_address_prefix = "*"
+      description                = "Allow SSH OnPrem traffic via Azure Firewall"
+    },
+    {
+      name                       = "Allow-Outbound-NAT-Gateway"
+      priority                   = 130
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "*"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+      description                = "Allow outbound to NAT Gateway"
+    },
+    {
+      name                       = "Allow-HTTP-From-AdminVM" # NEW
+      priority                   = 120
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "10.0.0.160/27" # Hub Admin-VM subnet
+      destination_address_prefix = "*"
+      description                = "Admin VM → Web-App PE (HTTP)"
+    },
+    {
+      name                       = "Allow-HTTPS-From-AdminVM" # NEW
+      priority                   = 121
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "10.0.0.160/27"
+      destination_address_prefix = "*"
+      description                = "Admin VM → Web-App PE (HTTPS)"
+    },
 
-#     {
-#       name                       = "Deny-Direct-Internet-Inbound"
-#       priority                   = 150
-#       direction                  = "Inbound"
-#       access                     = "Deny"
-#       protocol                   = "*"
-#       source_port_range          = "*"
-#       destination_port_range     = "*"
-#       source_address_prefix      = "Internet"
-#       destination_address_prefix = "*"
-#       description                = "Deny direct Internet inbound (must use AGW)"
-#     }
-#   ]
+    {
+      name                       = "Deny-Direct-Internet-Inbound"
+      priority                   = 150
+      direction                  = "Inbound"
+      access                     = "Deny"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "*"
+      source_address_prefix      = "Internet"
+      destination_address_prefix = "*"
+      description                = "Deny direct Internet inbound (must use AGW)"
+    }
+  ]
 
-#   # VNet app connecté exposée - Subnet Back => SQL + filtrage IP
-#   "nsg-expose-back-POCpub-1" = [
-#     {
-#       name                       = "Allow-SQL-From-Integration"
-#       priority                   = 100
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "1433"
-#       source_address_prefix      = "10.2.0.0/26"
-#       destination_address_prefix = "*"
-#       description                = "Subnet Back => SQL + filtrage IP from Integration subnet"
-#     },
+  # VNet app connecté exposée - Subnet Back => SQL + filtrage IP
+  "nsg-expose-back-POCpub-1" = [
+    {
+      name                       = "Allow-SQL-From-Integration"
+      priority                   = 100
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "1433"
+      source_address_prefix      = "10.2.0.0/26"
+      destination_address_prefix = "*"
+      description                = "Subnet Back => SQL + filtrage IP from Integration subnet"
+    },
 
-#     # Removed duplicate AdminVM/OnPremVM HTTP/HTTPS rules (present in nonexpose-back NSG)
-#     {
-#       name                       = "Deny-All-Other"
-#       priority                   = 4096
-#       direction                  = "Inbound"
-#       access                     = "Deny"
-#       protocol                   = "*"
-#       source_port_range          = "*"
-#       destination_port_range     = "*"
-#       source_address_prefix      = "*"
-#       destination_address_prefix = "*"
-#       description                = "Deny all other traffic"
-#     }
-#   ]
+    # Removed duplicate AdminVM/OnPremVM HTTP/HTTPS rules (present in nonexpose-back NSG)
+    {
+      name                       = "Deny-All-Other"
+      priority                   = 4096
+      direction                  = "Inbound"
+      access                     = "Deny"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "*"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+      description                = "Deny all other traffic"
+    }
+  ]
 
-#   # Exposé Compute NSG - Enhanced for OnPrem and Database Access
-#   "nsg-expose-compute-POCpub-1" = [
-#     {
-#       name                       = "Allow-SSH-From-Hub"
-#       priority                   = 100
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "22"
-#       source_address_prefix      = "10.0.0.160/27"
-#       destination_address_prefix = "*"
-#       description                = "Allow SSH from Hub compute"
-#     },
-#     {
-#       name                       = "Allow-RDP-From-Hub"
-#       priority                   = 101
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "3389"
-#       source_address_prefix      = "10.0.0.160/27"
-#       destination_address_prefix = "*"
-#       description                = "Allow RDP from Hub compute"
-#     },
-#     {
-#       name                       = "Allow-HTTP-OnPrem-Access"
-#       priority                   = 110
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "80"
-#       source_address_prefix      = "192.168.0.0/22"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTP OnPrem access via Azure Firewall"
-#     },
-#     {
-#       name                       = "Allow-HTTPS-OnPrem-Access"
-#       priority                   = 111
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "192.168.0.0/22"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTPS OnPrem access via Azure Firewall"
-#     },
-#     {
-#       name                       = "Allow-RDP-OnPrem-Access"
-#       priority                   = 112
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "3389"
-#       source_address_prefix      = "192.168.0.0/22"
-#       destination_address_prefix = "*"
-#       description                = "Allow RDP OnPrem access via Azure Firewall"
-#     },
-#     {
-#       name                       = "Allow-SSH-OnPrem-Access"
-#       priority                   = 113
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "22"
-#       source_address_prefix      = "192.168.0.0/22"
-#       destination_address_prefix = "*"
-#       description                = "Allow SSH OnPrem access via Azure Firewall"
-#     },
-#     {
-#       name                       = "Allow-HTTP-AGW-Health-Probe"
-#       priority                   = 120
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "80"
-#       source_address_prefix      = "10.0.0.64/26"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTP Application Gateway health probes"
-#     },
-#     {
-#       name                       = "Allow-HTTPS-AGW-Health-Probe"
-#       priority                   = 121
-#       direction                  = "Inbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "10.0.0.64/26"
-#       destination_address_prefix = "*"
-#       description                = "Allow HTTPS Application Gateway health probes"
-#     },
-#     {
-#       name                       = "Allow-Outbound-SQL"
-#       priority                   = 200
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "1433"
-#       source_address_prefix      = "*"
-#       destination_address_prefix = "10.2.0.64/26"
-#       description                = "Allow outbound SQL to database subnet"
-#     },
-#     {
-#       name                       = "Allow-Outbound-HTTPS-Database"
-#       priority                   = 201
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "Tcp"
-#       source_port_range          = "*"
-#       destination_port_range     = "443"
-#       source_address_prefix      = "*"
-#       destination_address_prefix = "10.2.0.64/26"
-#       description                = "Allow outbound HTTPS to database subnet"
-#     },
-#     {
-#       name                       = "Allow-Outbound-Internet"
-#       priority                   = 210
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "*"
-#       source_port_range          = "*"
-#       destination_port_range     = "*"
-#       source_address_prefix      = "*"
-#       destination_address_prefix = "Internet"
-#       description                = "Allow outbound internet via NAT Gateway"
-#     },
-#     {
-#       name                       = "Allow-Outbound-VNet"
-#       priority                   = 220
-#       direction                  = "Outbound"
-#       access                     = "Allow"
-#       protocol                   = "*"
-#       source_port_range          = "*"
-#       destination_port_range     = "*"
-#       source_address_prefix      = "*"
-#       destination_address_prefix = "VirtualNetwork"
-#       description                = "Allow communication within virtual networks"
-#     }
-#   ]
-# }
+  # Exposé Compute NSG - Enhanced for OnPrem and Database Access
+  "nsg-expose-compute-POCpub-1" = [
+    {
+      name                       = "Allow-SSH-From-Hub"
+      priority                   = 100
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "22"
+      source_address_prefix      = "10.0.0.160/27"
+      destination_address_prefix = "*"
+      description                = "Allow SSH from Hub compute"
+    },
+    {
+      name                       = "Allow-RDP-From-Hub"
+      priority                   = 101
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "3389"
+      source_address_prefix      = "10.0.0.160/27"
+      destination_address_prefix = "*"
+      description                = "Allow RDP from Hub compute"
+    },
+    {
+      name                       = "Allow-HTTP-OnPrem-Access"
+      priority                   = 110
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "192.168.0.0/22"
+      destination_address_prefix = "*"
+      description                = "Allow HTTP OnPrem access via Azure Firewall"
+    },
+    {
+      name                       = "Allow-HTTPS-OnPrem-Access"
+      priority                   = 111
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "192.168.0.0/22"
+      destination_address_prefix = "*"
+      description                = "Allow HTTPS OnPrem access via Azure Firewall"
+    },
+    {
+      name                       = "Allow-RDP-OnPrem-Access"
+      priority                   = 112
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "3389"
+      source_address_prefix      = "192.168.0.0/22"
+      destination_address_prefix = "*"
+      description                = "Allow RDP OnPrem access via Azure Firewall"
+    },
+    {
+      name                       = "Allow-SSH-OnPrem-Access"
+      priority                   = 113
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "22"
+      source_address_prefix      = "192.168.0.0/22"
+      destination_address_prefix = "*"
+      description                = "Allow SSH OnPrem access via Azure Firewall"
+    },
+    {
+      name                       = "Allow-HTTP-AGW-Health-Probe"
+      priority                   = 120
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = "10.0.0.64/26"
+      destination_address_prefix = "*"
+      description                = "Allow HTTP Application Gateway health probes"
+    },
+    {
+      name                       = "Allow-HTTPS-AGW-Health-Probe"
+      priority                   = 121
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "10.0.0.64/26"
+      destination_address_prefix = "*"
+      description                = "Allow HTTPS Application Gateway health probes"
+    },
+    {
+      name                       = "Allow-Outbound-SQL"
+      priority                   = 200
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "1433"
+      source_address_prefix      = "*"
+      destination_address_prefix = "10.2.0.64/26"
+      description                = "Allow outbound SQL to database subnet"
+    },
+    {
+      name                       = "Allow-Outbound-HTTPS-Database"
+      priority                   = 201
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "*"
+      destination_address_prefix = "10.2.0.64/26"
+      description                = "Allow outbound HTTPS to database subnet"
+    },
+    {
+      name                       = "Allow-Outbound-Internet"
+      priority                   = 210
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "*"
+      source_address_prefix      = "*"
+      destination_address_prefix = "Internet"
+      description                = "Allow outbound internet via NAT Gateway"
+    },
+    {
+      name                       = "Allow-Outbound-VNet"
+      priority                   = 220
+      direction                  = "Outbound"
+      access                     = "Allow"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_range     = "*"
+      source_address_prefix      = "*"
+      destination_address_prefix = "VirtualNetwork"
+      description                = "Allow communication within virtual networks"
+    }
+  ]
+}
 
 # # -----------------------------------------------------------------------------
 # # Route Tables - UDR Implementation 
 # # -----------------------------------------------------------------------------
-# route_tables = {
-#   # OnPrem Route Table: On-prem -> Hub -> Firewall -> Non-Connected Apps
-#   "rt-onprem-POCpub-1" = {
-#     routes = [
-#       {
-#         name                   = "Route-to-NonExpose-Spoke"
-#         address_prefix         = "10.1.0.0/24"
-#         next_hop_type          = "VirtualAppliance"
-#         next_hop_in_ip_address = "10.0.0.4"
-#       },
-#       {
-#         name                   = "Route-to-Expose-Spoke-via-Firewall"
-#         address_prefix         = "10.2.0.0/24"
-#         next_hop_type          = "VirtualAppliance"
-#         next_hop_in_ip_address = "10.0.0.4"
-#       },
-#       {
-#         name                   = "Route-to-Hub"
-#         address_prefix         = "10.0.0.0/22"
-#         next_hop_type          = "VnetLocal"
-#         next_hop_in_ip_address = null
-#       }
-#     ]
-#     tags = {
-#       Environment = "POC"
-#       Purpose     = "OnPrem-via-Firewall-to-NonConnectedApps"
-#     }
-#   }
-#   # Non-Exposé Route Table: AFW -> Next Hop -> Vnet Spoke App connectée non expo with SQL MI requirements
-#   # Non-Exposé Route Table: AFW -> Next Hop -> Vnet Spoke App connectée non expo with COMPLETE SQL MI requirements
-#   "rt-nonexpose-POCpub-1" = {
-#     routes = [
-#       {
-#         name                   = "Route-to-AAD"
-#         address_prefix         = "AzureActiveDirectory"
-#         next_hop_type          = "Internet"
-#         next_hop_in_ip_address = null
-#       },
-#       {
-#         name                   = "Route-to-OneDsCollector"
-#         address_prefix         = "OneDsCollector"
-#         next_hop_type          = "Internet"
-#         next_hop_in_ip_address = null
-#       },
-#       {
-#         name                   = "Route-to-Storage-FranceCentral"
-#         address_prefix         = "Storage.francecentral"
-#         next_hop_type          = "Internet"
-#         next_hop_in_ip_address = null
-#       },
-#       {
-#         name                   = "Route-to-Storage-FranceSouth"
-#         address_prefix         = "Storage.francesouth"
-#         next_hop_type          = "Internet"
-#         next_hop_in_ip_address = null
-#       },
-#       {
-#         name                   = "SqlMI-Subnet-Local"
-#         address_prefix         = "10.1.0.192/27"
-#         next_hop_type          = "VnetLocal"
-#         next_hop_in_ip_address = null
-#       },
-#       {
-#         name                   = "Default-Route-via-AFW"
-#         address_prefix         = "0.0.0.0/0"
-#         next_hop_type          = "VirtualAppliance"
-#         next_hop_in_ip_address = "10.0.0.4"
-#       },
-#       {
-#         name                   = "Route-to-OnPrem"
-#         address_prefix         = "192.168.0.0/22"
-#         next_hop_type          = "VirtualAppliance"
-#         next_hop_in_ip_address = "10.0.0.4"
-#       },
-#       {
-#         name                   = "Route-to-Expose-Spoke"
-#         address_prefix         = "10.2.0.0/24"
-#         next_hop_type          = "VirtualAppliance"
-#         next_hop_in_ip_address = "10.0.0.4"
-#       }
-#     ]
-#     tags = {
-#       Environment = "POC"
-#       Purpose     = "AFW-NextHop-NonExpose-SqlMI"
-#     }
-#   }
+route_tables = {
+  # OnPrem Route Table: On-prem -> Hub -> Firewall -> Non-Connected Apps
+  "rt-onprem-POCpub-1" = {
+    routes = [
+      {
+        name                   = "Route-to-NonExpose-Spoke"
+        address_prefix         = "10.1.0.0/24"
+        next_hop_type          = "VirtualAppliance"
+        next_hop_in_ip_address = "10.0.0.4"
+      },
+      {
+        name                   = "Route-to-Expose-Spoke-via-Firewall"
+        address_prefix         = "10.2.0.0/24"
+        next_hop_type          = "VirtualAppliance"
+        next_hop_in_ip_address = "10.0.0.4"
+      },
+      {
+        name                   = "Route-to-Hub"
+        address_prefix         = "10.0.0.0/22"
+        next_hop_type          = "VnetLocal"
+        next_hop_in_ip_address = null
+      }
+    ]
+    tags = {
+      Environment = "POC"
+      Purpose     = "OnPrem-via-Firewall-to-NonConnectedApps"
+    }
+  }
+  # Non-Exposé Route Table: AFW -> Next Hop -> Vnet Spoke App connectée non expo with SQL MI requirements
+  # Non-Exposé Route Table: AFW -> Next Hop -> Vnet Spoke App connectée non expo with COMPLETE SQL MI requirements
+  # "rt-nonexpose-POCpub-1" = {
+  #   routes = [
+  #     {
+  #       name                   = "Route-to-AAD"
+  #       address_prefix         = "AzureActiveDirectory"
+  #       next_hop_type          = "Internet"
+  #       next_hop_in_ip_address = null
+  #     },
+  #     {
+  #       name                   = "Route-to-OneDsCollector"
+  #       address_prefix         = "OneDsCollector"
+  #       next_hop_type          = "Internet"
+  #       next_hop_in_ip_address = null
+  #     },
+  #     {
+  #       name                   = "Route-to-Storage-FranceCentral"
+  #       address_prefix         = "Storage.francecentral"
+  #       next_hop_type          = "Internet"
+  #       next_hop_in_ip_address = null
+  #     },
+  #     {
+  #       name                   = "Route-to-Storage-FranceSouth"
+  #       address_prefix         = "Storage.francesouth"
+  #       next_hop_type          = "Internet"
+  #       next_hop_in_ip_address = null
+  #     },
+  #     {
+  #       name                   = "SqlMI-Subnet-Local"
+  #       address_prefix         = "10.1.0.192/27"
+  #       next_hop_type          = "VnetLocal"
+  #       next_hop_in_ip_address = null
+  #     },
+  #     {
+  #       name                   = "Default-Route-via-AFW"
+  #       address_prefix         = "0.0.0.0/0"
+  #       next_hop_type          = "VirtualAppliance"
+  #       next_hop_in_ip_address = "10.0.0.4"
+  #     },
+  #     {
+  #       name                   = "Route-to-OnPrem"
+  #       address_prefix         = "192.168.0.0/22"
+  #       next_hop_type          = "VirtualAppliance"
+  #       next_hop_in_ip_address = "10.0.0.4"
+  #     },
+  #     {
+  #       name                   = "Route-to-Expose-Spoke"
+  #       address_prefix         = "10.2.0.0/24"
+  #       next_hop_type          = "VirtualAppliance"
+  #       next_hop_in_ip_address = "10.0.0.4"
+  #     }
+  #   ]
+  #   tags = {
+  #     Environment = "POC"
+  #     Purpose     = "AFW-NextHop-NonExpose-SqlMI"
+  #   }
+  # }
 
 
   # Exposé Route Table: Sortie Internet NAT GW
