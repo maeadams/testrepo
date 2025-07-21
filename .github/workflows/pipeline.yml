@@ -4,6 +4,12 @@ permissions:
   id-token: write
   pull-requests: write
 
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_USE_AZUREAD: true
+
 on:
   workflow_dispatch:
     inputs:
@@ -39,11 +45,11 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init -backend-config="resource_group_name=${{secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME}}" -backend-config="storage_account_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME}}" -backend-config="container_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}"
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          ARM_USE_AZUREAD: true
+        # env:
+        #   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        #   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        #   ARM_USE_AZUREAD: true
       
       - name: Terraform Validate
         id: validate
@@ -52,11 +58,11 @@ jobs:
       - name: Terraform plan
         id: plan
         run: terraform plan -var-file=./tfvars/terraform.tfvars
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          ARM_USE_AZUREAD: true
+        # env:
+        #   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        #   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        #   ARM_USE_AZUREAD: true
 
   #     - name: Terraform Apply
   #       id: apply
